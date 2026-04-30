@@ -2,6 +2,7 @@ package com.example.mobile_survey_application;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -9,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import viewmodel.survey_viewmodel;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -23,5 +26,6 @@ public class HomeActivity extends AppCompatActivity {
             return insets;
         });
 
+        Log.v("test", "홈열림" );
     }
 }
