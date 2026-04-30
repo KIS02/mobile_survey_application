@@ -29,26 +29,11 @@ public class RetrofitClient {
         return retrofit;
     }
 
-    // [추가] Glide 이미지 로딩 시 BASE_URL 조합에 사용
-    public static String getBaseUrl() {
-        return BASE_URL;
-    }
-
     public static AuthApiService getAuthApiService() {
         return getInstance().create(AuthApiService.class);
     }
 
     public static CategoryApiService getCategoryApiService() {
         return getInstance().create(CategoryApiService.class);
-    }
-
-    // [추가] 리워드 목록 API
-    public static RewardApiService getRewardApiService() {
-        return getInstance().create(RewardApiService.class);
-    }
-
-    // [추가] 유저 정보 API (크레딧 조회 등)
-    public static UserApiService getUserApiService() {
-        return getInstance().create(UserApiService.class);
     }
 }

@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mobile_survey_application"
         android:networkSecurityConfig="@xml/network_security_config">
-
+        <!-- 테스트 완료 후 아래 주석 해제, LoginTestActivity의 intent-filter 제거 -->
+        <!--
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -23,12 +24,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        -->
+
+        <!-- 테스트 중 임시 launcher (테스트 완료 후 위 주석 해제 후 아래 intent-filter 제거) -->
+        <activity android:name=".MainActivity" android:exported="true" />
         <activity android:name=".HomeActivity" />
-        <activity android:name=".LoginTestActivity" android:exported="true">
+        <activity
+            android:name=".LoginTestActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".LogoutActivity" />
-        <activity android:name=".WithdrawActivity" />
     </application>
 
 </manifest>
