@@ -10,10 +10,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+
+import com.example.mobile_survey_application.fragment.FragmentHome;
+import com.example.mobile_survey_application.fragment.FragmentProfile;
+import com.example.mobile_survey_application.fragment.FragmentReward;
+import com.example.mobile_survey_application.fragment.FragmentSetting;
+import com.example.mobile_survey_application.fragment.FragmentSurvey;
 
 import viewmodel.survey_viewmodel;
 
 public class HomeActivity extends AppCompatActivity {
+
+    Fragment screen_home = new FragmentHome();
+    Fragment screen_reward = new FragmentReward();
+    Fragment screen_profile = new FragmentProfile();
+    Fragment screen_survey = new FragmentSurvey();
+    Fragment screen_setting = new FragmentSetting();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
