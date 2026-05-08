@@ -10,6 +10,10 @@ import android.view.ViewGroup;
 
 import com.example.mobile_survey_application.R;
 
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link FragmentHome#newInstance} factory method to
@@ -60,7 +64,32 @@ public class FragmentHome extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        TextView randomSurveyButton = view.findViewById(R.id.randomSurveyButton);
+        LinearLayout questionLayout = view.findViewById(R.id.questionLayout);
+        TextView questionText = view.findViewById(R.id.questionText);
+        RadioGroup ratingGroup = view.findViewById(R.id.ratingGroup);
+        Button nextQuestionButton = view.findViewById(R.id.nextQuestionButton);
+
+        String[] questions = {
+                "Q. 나는 아침 식사를 자주 한다.",
+                "Q. 나는 하루 한 끼를 규칙적으로 먹는다."
+        };
+
+        final int[] currentQuestionIndex = {0};
+
+        randomSurveyButton.setOnClickListener(v -> {
+            randomSurveyButton.setVisibility(View.GONE);
+            questionLayout.setVisibility(View.VISIBLE);
+        });
+
+        nextQuestionButton.setOnClickListener(v -> {
+            currentQuestionIndex[0] = (currentQuestionIndex[0] + 1) % questions.length;
+            questionText.setText(questions[currentQuestionIndex[0]]);
+            ratingGroup.clearCheck();
+        });
+
+        return view;
     }
 }
