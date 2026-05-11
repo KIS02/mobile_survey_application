@@ -27,6 +27,8 @@
         <activity android:name=".LoginTestActivity" android:exported="true">
         </activity>
         <activity android:name=".RegisterActivity" />
+        <activity android:name=".LogoutActivity" />
+        <activity android:name=".WithdrawActivity" />
     </application>
 
 </manifest>
