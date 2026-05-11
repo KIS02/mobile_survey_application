@@ -110,16 +110,12 @@
                             android:orientation="vertical"
                             android:padding="12dp">
 
-                            <ImageView
-                                android:id="@+id/ivRewardImage1"
+                            <FrameLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="150dp"
-                                android:background="#DDE3EF"
-                                android:scaleType="centerCrop"
-                                android:contentDescription="리워드 이미지" />
+                                android:background="#DDE3EF" />
 
                             <TextView
-                                android:id="@+id/tvRewardName1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
@@ -128,7 +124,6 @@
                                 android:textSize="16sp" />
 
                             <TextView
-                                android:id="@+id/tvRewardPrice1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6dp"
@@ -158,16 +153,12 @@
                             android:orientation="vertical"
                             android:padding="12dp">
 
-                            <ImageView
-                                android:id="@+id/ivRewardImage2"
+                            <FrameLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="150dp"
-                                android:background="#DDE3EF"
-                                android:scaleType="centerCrop"
-                                android:contentDescription="리워드 이미지" />
+                                android:background="#DDE3EF" />
 
                             <TextView
-                                android:id="@+id/tvRewardName2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
@@ -176,7 +167,6 @@
                                 android:textSize="16sp" />
 
                             <TextView
-                                android:id="@+id/tvRewardPrice2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6dp"
@@ -215,16 +205,12 @@
                             android:orientation="vertical"
                             android:padding="12dp">
 
-                            <ImageView
-                                android:id="@+id/ivRewardImage3"
+                            <FrameLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="150dp"
-                                android:background="#DDE3EF"
-                                android:scaleType="centerCrop"
-                                android:contentDescription="리워드 이미지" />
+                                android:background="#DDE3EF" />
 
                             <TextView
-                                android:id="@+id/tvRewardName3"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
@@ -233,7 +219,6 @@
                                 android:textSize="16sp" />
 
                             <TextView
-                                android:id="@+id/tvRewardPrice3"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6dp"
@@ -263,16 +248,12 @@
                             android:orientation="vertical"
                             android:padding="12dp">
 
-                            <ImageView
-                                android:id="@+id/ivRewardImage4"
+                            <FrameLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="150dp"
-                                android:background="#DDE3EF"
-                                android:scaleType="centerCrop"
-                                android:contentDescription="리워드 이미지" />
+                                android:background="#DDE3EF" />
 
                             <TextView
-                                android:id="@+id/tvRewardName4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
@@ -281,7 +262,6 @@
                                 android:textSize="16sp" />
 
                             <TextView
-                                android:id="@+id/tvRewardPrice4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="6dp"
