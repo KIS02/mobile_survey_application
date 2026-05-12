@@ -8,18 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-
-    <EditText
-        android:id="@+id/editTextText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text"
-        android:text="홈화면"
-        tools:layout_editor_absoluteX="100dp"
-        tools:layout_editor_absoluteY="342dp" />
-
-
     <!-- Fragment 영역 -->
     <FrameLayout
         android:id="@+id/fragment_container"
