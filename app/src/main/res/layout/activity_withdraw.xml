@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="탈퇴가 완료되었습니다."
+            android:textColor="#111111"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="그동안 이용해주셔서 감사합니다."
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btnConfirmWithdraw"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="180dp"
+            android:text="확인"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".fragment.FragmentHome">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp">
+
+        <include
+            layout="@layout/header_home" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="랜덤 항목 설문하기"
+            android:textColor="#111111"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="무작위로 설문 항목들이 제시됩니다."
+            android:textColor="#666666"
+            android:textSize="13sp" />
+
+        <FrameLayout
+            android:id="@+id/randomSurveyBox"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="20dp"
+            android:background="#F3F3F3">
+
+            <TextView
+                android:id="@+id/randomSurveyButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="랜덤 설문 바로가기"
+                android:textColor="#111111"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <LinearLayout
+                android:id="@+id/questionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/questionText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Q. 나는 아침 식사를 자주 한다."
+                    android:textColor="#111111"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="240dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="1" android:textSize="18sp" android:textStyle="bold" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="2" android:textSize="18sp" android:textStyle="bold" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="3" android:textSize="18sp" android:textStyle="bold" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="4" android:textSize="18sp" android:textStyle="bold" />
+                    <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="5" android:textSize="18sp" android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <RadioGroup
+                    android:id="@+id/ratingGroup"
+                    android:layout_width="240dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <RadioButton android:id="@+id/rating1" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:gravity="center" android:buttonTint="#111111" />
+                    <RadioButton android:id="@+id/rating2" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:gravity="center" android:buttonTint="#111111" />
+                    <RadioButton android:id="@+id/rating3" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:gravity="center" android:buttonTint="#111111" />
+                    <RadioButton android:id="@+id/rating4" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:gravity="center" android:buttonTint="#111111" />
+                    <RadioButton android:id="@+id/rating5" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:gravity="center" android:buttonTint="#111111" />
+
+                </RadioGroup>
+
+                <Button
+                    android:id="@+id/nextQuestionButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="16dp"
+                    android:text="다음 항목"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="22dp"
+            android:background="#DDDDDD" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="선택 항목 설문하기"
+            android:textColor="#111111"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="원하는 주제의 설문지를 선택 가능합니다."
+            android:textColor="#666666"
+            android:textSize="13sp" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="92dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_survey_card"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="애완동물 관리, 어떻게 하시나요?"
+                android:textColor="#111111"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="#EEEEEE"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:text="애완동물"
+                android:textColor="#333333"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="-86dp"
+            android:layout_marginEnd="8dp"
+            android:background="#111111"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:text="10 points ✨"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="92dp"
+            android:layout_marginTop="70dp"
+            android:background="@drawable/bg_survey_card"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="청소년들의 식습관에 관한 조사"
+                android:textColor="#111111"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#EEEEEE"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:text="10대"
+                    android:textColor="#333333"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:background="#EEEEEE"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:text="음식"
+                    android:textColor="#333333"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="-86dp"
+            android:layout_marginEnd="8dp"
+            android:background="#111111"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:text="20 points ✨"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</FrameLayout>
