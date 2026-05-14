@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private void startApplication(){
         autoHomeHandler.removeCallbacks(runable_delay);
 
-        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+//        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+        Intent intent = new Intent(MainActivity.this, LoginTestActivity.class);
         startActivity(intent);
 
         finish();
