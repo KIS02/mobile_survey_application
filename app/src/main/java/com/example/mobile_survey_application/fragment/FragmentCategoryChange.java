@@ -6,6 +6,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +14,15 @@ import android.view.ViewGroup;
 
 import com.example.mobile_survey_application.R;
 
-public class FragmentCategoryChange extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
 
+import viewmodel.AuthViewModel;
+
+public class FragmentCategoryChange extends Fragment {
+    private AuthViewModel authViewModel;
+
+    private CheckBox checkFood, checkTravel, checkAnimal, checkGame, checkIT, checkSports;
     private TextView txtCount;
 
     private CheckBox[] checkBoxes;
@@ -26,6 +34,7 @@ public class FragmentCategoryChange extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
 
         View view = inflater.inflate(R.layout.fragment_category_change, container, false);
 
@@ -69,11 +78,26 @@ public class FragmentCategoryChange extends Fragment {
             });
         }
 
+        // 이전에 선택했던 카테고리 복원
+        restoreSelectedCategories(authViewModel.getSelectedCategories().getValue());
+
         view.findViewById(R.id.btnBack).setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
         });
 
         view.findViewById(R.id.btnSaveCategory).setOnClickListener(v -> {
+
+            List<String> selected = new ArrayList<>();
+
+            for (CheckBox checkBox : checkBoxes) {
+                if (checkBox.isChecked()) {
+                    selected.add(checkBox.getText().toString());
+                }
+            }
+            authViewModel.setSelectedCategories(selected);
+
+            // 저장한 카테고리가 ["음식", "동물"] 처럼 AuthViewModel의 selectedCategories에 저장됩니다.
+
             Toast.makeText(
                     getContext(),
                     "카테고리가 저장되었습니다.",
@@ -84,6 +108,15 @@ public class FragmentCategoryChange extends Fragment {
         });
 
         return view;
+    }
+
+    private void restoreSelectedCategories(List<String> selectedCategories) {
+        if (selectedCategories == null) return;
+
+        for (CheckBox checkBox : checkBoxes) {
+            String categoryName = checkBox.getText().toString();
+            checkBox.setChecked(selectedCategories.contains(categoryName));
+        }
     }
 
     private int getCheckedCount() {

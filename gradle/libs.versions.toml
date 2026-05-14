@@ -28,7 +28,6 @@ google-signin = { group = "com.google.android.gms", name = "play-services-auth",
 lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycle" }
 lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref = "lifecycle" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 

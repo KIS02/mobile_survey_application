@@ -16,6 +16,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.mobile_survey_application.fragment.FragmentCategoryChange;
+
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +38,8 @@ public class RegisterActivity extends AppCompatActivity {
     private RadioGroup rgGender;
     private RadioButton rbMale, rbFemale;
     private LinearLayout llCategories;
-    private TextView tvSelectedCategories;
+    private LinearLayout btnCategories;
+    private TextView btnCategoriesText;
     private Button btnRegister;
     private ProgressBar progressBar;
 
@@ -60,7 +65,9 @@ public class RegisterActivity extends AppCompatActivity {
         rbMale = findViewById(R.id.rb_male);
         rbFemale = findViewById(R.id.rb_female);
         llCategories = findViewById(R.id.ll_categories);
-        tvSelectedCategories = findViewById(R.id.tv_selected_categories);
+        //tvSelectedCategories = findViewById(R.id.tv_selected_categories); 이거 대신 아래코드사용으로 변경
+        btnCategories = findViewById(R.id.btnCategory);
+        btnCategoriesText = findViewById(R.id.btnCategoryText);
         btnRegister = findViewById(R.id.btn_register);
         progressBar = findViewById(R.id.progress_bar);
 
@@ -73,20 +80,19 @@ public class RegisterActivity extends AppCompatActivity {
 
         observeViewModel();
 
+
+
         btnRegister.setOnClickListener(v -> submitRegister());
     }
-
     private void observeViewModel() {
         authViewModel.getIsLoading().observe(this, isLoading -> {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             btnRegister.setEnabled(!isLoading);
         });
 
-        authViewModel.getCategories().observe(this, this::renderCategoryCheckBoxes);
-
         authViewModel.getRegisterResult().observe(this, response -> {
             Toast.makeText(this, "회원가입 완료! 홈으로 이동합니다.", Toast.LENGTH_SHORT).show();
-            // 실제 서비스에서는 HomeActivity 등으로 이동
+
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -95,9 +101,50 @@ public class RegisterActivity extends AppCompatActivity {
         authViewModel.getErrorMessage().observe(this, message ->
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         );
+
+        // 카테고리 버튼기능 Fragment + ViewModel 통합
+        observeBtnCategory();
+
+    }
+
+    // 카테고리 기능
+    private void observeBtnCategory(){
+        View btnCategory = findViewById(R.id.btnCategory);
+
+        btnCategory.setOnClickListener(v -> {
+            Toast.makeText(this, "카테고리 클릭됨", Toast.LENGTH_SHORT).show();
+            authViewModel.onCategoryClick();
+        });
+
+        authViewModel.getNavigateToCategoryChange().observe(this, shouldNavigate -> {
+            if (Boolean.TRUE.equals(shouldNavigate)) {
+
+                View fragmentContainer = findViewById(R.id.fragment_container);
+
+                if (fragmentContainer == null) {
+                    Toast.makeText(this, "fragment_container를 못 찾음", Toast.LENGTH_SHORT).show();
+                    authViewModel.doneNavigateToCategoryChange();
+                    return;
+                }
+
+                fragmentContainer.setVisibility(View.VISIBLE);
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new FragmentCategoryChange())
+                        .addToBackStack(null)
+                        .commit();
+
+                authViewModel.doneNavigateToCategoryChange();
+            }
+        });
     }
 
     private void renderCategoryCheckBoxes(List<CategoryResponse> categories) {
+
+
+        // 우선 바로 다음으로 fragment를 띄우는 기능으로 전환하였습니다.
+        /*
         categoryList.clear();
         categoryList.addAll(categories);
         llCategories.removeAllViews();
@@ -120,11 +167,12 @@ public class RegisterActivity extends AppCompatActivity {
             });
             llCategories.addView(checkBox);
         }
+         */
     }
 
     private void updateSelectedCategoryText() {
         if (selectedCategoryIds.isEmpty()) {
-            tvSelectedCategories.setText("선택된 카테고리: 없음");
+            btnCategoriesText.setText("선택된 카테고리: 없음");
             return;
         }
         StringBuilder sb = new StringBuilder("선택된 카테고리: ");
@@ -138,7 +186,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         }
-        tvSelectedCategories.setText(sb.toString());
+        btnCategoriesText.setText(sb.toString());
     }
 
     private void submitRegister() {

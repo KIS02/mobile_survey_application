@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import data.local.TokenManager;
@@ -17,6 +18,8 @@ import model.GoogleLoginResponse;
 import model.RegisterRequest;
 import model.TokenResponse;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 public class AuthViewModel extends AndroidViewModel {
 
     private final AuthRepository authRepository = new AuthRepository();
@@ -28,6 +31,7 @@ public class AuthViewModel extends AndroidViewModel {
     private final MutableLiveData<List<CategoryResponse>> categories = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<List<String>> selectedCategories = new MutableLiveData<>(new ArrayList<>());
 
     public AuthViewModel(@NonNull Application application) {
         super(application);
@@ -39,6 +43,7 @@ public class AuthViewModel extends AndroidViewModel {
     public LiveData<List<CategoryResponse>> getCategories() { return categories; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
+    private final MutableLiveData<Boolean> navigateToCategoryChange = new MutableLiveData<>();
 
     public void googleLogin(String idToken) {
         isLoading.setValue(true);
@@ -80,6 +85,14 @@ public class AuthViewModel extends AndroidViewModel {
         });
     }
 
+
+    public LiveData<List<String>> getSelectedCategories() {
+        return selectedCategories;
+    }
+
+    public void setSelectedCategories(List<String> categories) {
+        selectedCategories.setValue(categories);
+    }
     public void loadCategories() {
         categoryRepository.getCategories(new CategoryRepository.CategoryCallback() {
             @Override
@@ -92,5 +105,17 @@ public class AuthViewModel extends AndroidViewModel {
                 errorMessage.postValue(message);
             }
         });
+    }
+
+    public LiveData<Boolean> getNavigateToCategoryChange() {
+        return navigateToCategoryChange;
+    }
+
+    public void onCategoryClick() {
+        navigateToCategoryChange.setValue(true);
+    }
+
+    public void doneNavigateToCategoryChange() {
+        navigateToCategoryChange.setValue(false);
     }
 }
