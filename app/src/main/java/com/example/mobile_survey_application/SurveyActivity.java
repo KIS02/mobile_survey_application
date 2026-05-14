@@ -1,18 +1,28 @@
 package com.example.mobile_survey_application;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Arrays;
+
 public class SurveyActivity extends AppCompatActivity {
 
     LinearLayout questionContainer;
+
+    private int num_question_box = 0;
+    private int[] answered;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,13 +31,37 @@ public class SurveyActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_survey);
 
+        Button btnSubmit = findViewById(R.id.btnSubmit);
+
+        btnSubmit.setOnClickListener(v -> {
+            submitButtonClicked();
+        });
+
         questionContainer = findViewById(R.id.question_container);
 
-        addQuestionBox(1, "나는 하루 한 끼를 규칙적으로 먹는다.");
-        addQuestionBox(2, "나는 아침 식사를 자주 한다.");
-        addQuestionBox(3, "나는 패스트푸드를 자주 섭취한다.");
-        addQuestionBox(4, "나는 야식을 자주 먹는다.");
-        addQuestionBox(5, "나는 채소를 자주 먹는다.");
+        // 임시로 만든 문제리스트
+        String[] questions = {
+                "나는 하루 한 끼를 규칙적으로 먹는다.",
+                "나는 아침 식사를 자주 한다.",
+                "나는 패스트푸드를 자주 섭취한다.",
+                "나는 야식을 자주 먹는다.",
+                "나는 채소를 자주 먹는다."
+        };
+
+        loadQuestions(5, questions);
+
+
+
+    }
+
+    private void loadQuestions(int number, String[] question_text) {
+        num_question_box = number;
+        answered = new int[num_question_box];
+        Arrays.fill(answered, -1);
+
+        for( int i = 0; i < number; i++){
+            addQuestionBox(i+1, question_text[i]);
+        }
     }
 
     private void addQuestionBox(int number, String questionText) {
@@ -120,7 +154,10 @@ public class SurveyActivity extends AppCompatActivity {
                 for (RadioButton rb : radioButtons) {
                     rb.setChecked(false);
                 }
+
                 radioButtons[index].setChecked(true);
+
+                answered[number - 1] = index + 1;
             });
 
             choiceColumn.addView(numberText);
@@ -137,4 +174,47 @@ public class SurveyActivity extends AppCompatActivity {
     private int dp(int value) {
         return (int) (value * getResources().getDisplayMetrics().density);
     }
+
+    private void submitButtonClicked() {
+        if ( isQuestionCompleted() )
+            showConfirmDialog();
+        else
+            showDeniedDialog();
+    }
+
+    private void showConfirmDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("설문을 완료할까요?")
+                .setMessage("제출 후에는 답변을 수정할 수 없습니다.")
+                .setNegativeButton("취소", null)
+                .setPositiveButton("제출", (dialog, which) -> {
+                    showSubmitSuccessToast();
+                    Intent intent = new Intent(SurveyActivity.this, HomeActivity.class);
+                    startActivity(intent);
+                })
+                .show();
+    }
+
+    private void showDeniedDialog(){
+        new AlertDialog.Builder(this)
+                .setTitle("응답을 완료해주세요.")
+                .setMessage("아직 선택되지 않은 문항이 있습니다.\n모든 문항에 응답한 후 제출해주세요.")
+                .setPositiveButton("확인", null)
+                .show();
+    }
+    private void showSubmitSuccessToast() {
+        Toast.makeText(SurveyActivity.this, "제출이 완료되었습니다", Toast.LENGTH_SHORT).show();
+    }
+    private boolean isQuestionCompleted(){
+        try {
+            for( int i = 0; i < num_question_box; i++){
+                if ( answered[i] == -1 )
+                    return false;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return true;
+    }
+
 }
