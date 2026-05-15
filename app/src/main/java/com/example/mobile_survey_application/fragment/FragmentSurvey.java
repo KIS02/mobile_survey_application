@@ -3,21 +3,19 @@ package com.example.mobile_survey_application.fragment;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.mobile_survey_application.R;
 import com.example.mobile_survey_application.SurveyActivity;
 
 public class FragmentSurvey extends Fragment {
 
-    private LinearLayout layoutSurvey1;
-    private LinearLayout layoutSurvey2;
+    private View layoutSurvey1;
+    private View layoutSurvey2;
 
     public FragmentSurvey() {
     }
@@ -51,7 +49,6 @@ public class FragmentSurvey extends Fragment {
     }
 
     private void showSurveyDialog(String title, String description, String reward) {
-
         new AlertDialog.Builder(requireContext())
                 .setTitle("설문 정보")
                 .setMessage(
@@ -63,10 +60,8 @@ public class FragmentSurvey extends Fragment {
                 )
                 .setNegativeButton("취소", null)
                 .setPositiveButton("시작하기", (dialog, which) -> {
-
                     Intent intent = new Intent(requireContext(), SurveyActivity.class);
                     startActivity(intent);
-
                 })
                 .show();
     }
