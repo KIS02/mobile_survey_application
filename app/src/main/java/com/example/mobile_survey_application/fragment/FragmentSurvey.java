@@ -1,5 +1,7 @@
 package com.example.mobile_survey_application.fragment;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,60 +9,65 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.example.mobile_survey_application.R;
+import com.example.mobile_survey_application.SurveyActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link FragmentSurvey#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentSurvey extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private LinearLayout layoutSurvey1;
+    private LinearLayout layoutSurvey2;
 
     public FragmentSurvey() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentSurvey.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentSurvey newInstance(String param1, String param2) {
-        FragmentSurvey fragment = new FragmentSurvey();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_survey, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_survey, container, false);
+
+        layoutSurvey1 = view.findViewById(R.id.layoutSurvey1);
+        layoutSurvey2 = view.findViewById(R.id.layoutSurvey2);
+
+        layoutSurvey1.setOnClickListener(v -> {
+            showSurveyDialog(
+                    "애완동물 관리, 어떻게 하시나요?",
+                    "반려동물 관리 습관에 관한 설문입니다.",
+                    "+30P 적립"
+            );
+        });
+
+        layoutSurvey2.setOnClickListener(v -> {
+            showSurveyDialog(
+                    "청소년들의 식습관에 관한 조사",
+                    "청소년들의 식습관 패턴을 파악하기 위한 설문입니다.",
+                    "+20P 적립"
+            );
+        });
+
+        return view;
+    }
+
+    private void showSurveyDialog(String title, String description, String reward) {
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("설문 정보")
+                .setMessage(
+                        title +
+                                "\n\n" +
+                                description +
+                                "\n\n소요 시간 : 약 1~2분\n" +
+                                reward
+                )
+                .setNegativeButton("취소", null)
+                .setPositiveButton("시작하기", (dialog, which) -> {
+
+                    Intent intent = new Intent(requireContext(), SurveyActivity.class);
+                    startActivity(intent);
+
+                })
+                .show();
     }
 }

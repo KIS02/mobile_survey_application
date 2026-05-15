@@ -37,6 +37,7 @@ android {
         debug {
             signingConfig = signingConfigs.getByName("debug")
             buildConfigField("String", "BASE_URL", "\"https://mobile.bizlinkersoft.com/\"")
+//            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"")
         }
         release {
             isMinifyEnabled = false
@@ -71,6 +72,10 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.livedata)
 
+    // Image Loading
+    implementation(libs.glide)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
