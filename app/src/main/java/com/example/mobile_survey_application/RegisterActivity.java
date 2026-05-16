@@ -2,6 +2,7 @@ package com.example.mobile_survey_application;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -44,8 +45,12 @@ public class RegisterActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private String tempToken;
-    private final List<Long> selectedCategoryIds = new ArrayList<>();
     private final List<CategoryResponse> categoryList = new ArrayList<>();
+
+    // 임시로 만들어놓은 CategoryIdes 변수입니다. 추후 서버를 통해 전송받게 수정해야 합니다.
+    private Long[] categoryIds = {1L, 2L, 3L, 4L, 5L, 6L};
+    private String[] categoryNames = {"음식", "여행", "동물", "게임", "IT", "스포츠"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +106,9 @@ public class RegisterActivity extends AppCompatActivity {
         authViewModel.getErrorMessage().observe(this, message ->
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         );
+        authViewModel.getSelectedCategoryIds().observe(this, ids -> {
+            updateSelectedCategoryText();
+        });
 
         // 카테고리 버튼기능 Fragment + ViewModel 통합
         observeBtnCategory();
@@ -108,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     // 카테고리 기능
-    private void observeBtnCategory(){
+    private void observeBtnCategory() {
         View btnCategory = findViewById(R.id.btnCategory);
 
         btnCategory.setOnClickListener(v -> {
@@ -140,53 +148,37 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void renderCategoryCheckBoxes(List<CategoryResponse> categories) {
-
-
-        // 우선 바로 다음으로 fragment를 띄우는 기능으로 전환하였습니다.
-        /*
-        categoryList.clear();
-        categoryList.addAll(categories);
-        llCategories.removeAllViews();
-
-        for (CategoryResponse category : categories) {
-            CheckBox checkBox = new CheckBox(this);
-            checkBox.setText(category.getName());
-            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    if (selectedCategoryIds.size() >= 5) {
-                        checkBox.setChecked(false);
-                        Toast.makeText(this, "최대 5개까지 선택 가능합니다.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    selectedCategoryIds.add(category.getId());
-                } else {
-                    selectedCategoryIds.remove(category.getId());
-                }
-                updateSelectedCategoryText();
-            });
-            llCategories.addView(checkBox);
-        }
-         */
-    }
-
     private void updateSelectedCategoryText() {
-        if (selectedCategoryIds.isEmpty()) {
+        List<Long> selectedCategoryIds = authViewModel.getSelectedCategoryIds().getValue();
+
+        if (selectedCategoryIds == null || selectedCategoryIds.isEmpty()) {
             btnCategoriesText.setText("선택된 카테고리: 없음");
             return;
         }
+
         StringBuilder sb = new StringBuilder("선택된 카테고리: ");
+
         for (int i = 0; i < selectedCategoryIds.size(); i++) {
             Long id = selectedCategoryIds.get(i);
-            for (CategoryResponse c : categoryList) {
-                if (c.getId().equals(id)) {
-                    sb.append(c.getName());
-                    if (i < selectedCategoryIds.size() - 1) sb.append(", ");
-                    break;
-                }
+
+            sb.append(getCategoryNameById(id));
+
+            if (i < selectedCategoryIds.size() - 1) {
+                sb.append(", ");
             }
         }
+
         btnCategoriesText.setText(sb.toString());
+    }
+
+    private String getCategoryNameById(Long id) {
+        for (int i = 0; i < categoryIds.length; i++) {
+            if (categoryIds[i].equals(id)) {
+                return categoryNames[i];
+            }
+        }
+
+        return "알 수 없음";
     }
 
     private void submitRegister() {
@@ -210,11 +202,27 @@ public class RegisterActivity extends AppCompatActivity {
         }
         String gender = (selectedGenderId == R.id.rb_male) ? "MALE" : "FEMALE";
 
+        List<Long> selectedCategoryIds = authViewModel.getSelectedCategoryIds().getValue();
+
+        if (selectedCategoryIds == null || selectedCategoryIds.isEmpty()) {
+            Toast.makeText(this, "카테고리를 1개 이상 선택해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         RegisterRequest request = new RegisterRequest(
                 name, telephone, nickname, gender, birthDate, region, occupation,
                 new ArrayList<>(selectedCategoryIds)
         );
-
+        // 임시 로그찍는용
+        Log.d("REGISTER_DEBUG", "tempToken = " + tempToken);
+        Log.d("REGISTER_DEBUG", "name = " + name);
+        Log.d("REGISTER_DEBUG", "telephone = " + telephone);
+        Log.d("REGISTER_DEBUG", "nickname = " + nickname);
+        Log.d("REGISTER_DEBUG", "gender = " + gender);
+        Log.d("REGISTER_DEBUG", "birthDate = " + birthDate);
+        Log.d("REGISTER_DEBUG", "region = " + region);
+        Log.d("REGISTER_DEBUG", "occupation = " + occupation);
+        Log.d("REGISTER_DEBUG", "selectedCategoryIds = " + selectedCategoryIds);
         authViewModel.register(tempToken, request);
     }
 }

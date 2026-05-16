@@ -33,6 +33,8 @@ public class AuthViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<List<String>> selectedCategories = new MutableLiveData<>(new ArrayList<>());
 
+    private final MutableLiveData<List<Long>> selectedCategoryIds = new MutableLiveData<>(new ArrayList<>());
+
     public AuthViewModel(@NonNull Application application) {
         super(application);
         tokenManager = new TokenManager(application);
@@ -117,5 +119,33 @@ public class AuthViewModel extends AndroidViewModel {
 
     public void doneNavigateToCategoryChange() {
         navigateToCategoryChange.setValue(false);
+    }
+
+    public LiveData<List<Long>> getSelectedCategoryIds() {
+        return selectedCategoryIds;
+    }
+
+    public void setSelectedCategoryIds(List<Long> ids) {
+        selectedCategoryIds.setValue(ids);
+    }
+
+    public void toggleCategory(long categoryId, boolean isChecked) {
+        List<Long> current = selectedCategoryIds.getValue();
+
+        if (current == null) {
+            current = new ArrayList<>();
+        } else {
+            current = new ArrayList<>(current);
+        }
+
+        if (isChecked) {
+            if (!current.contains(categoryId)) {
+                current.add(categoryId);
+            }
+        } else {
+            current.remove(categoryId);
+        }
+
+        selectedCategoryIds.setValue(current);
     }
 }
