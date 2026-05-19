@@ -49,6 +49,9 @@ public class LoginTestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        android.util.Log.e("LOGIN_TEST", "1. onCreate 시작");
+
         setContentView(R.layout.activity_login);
 
         btnGoogleLogin = findViewById(R.id.btn_google_login);
