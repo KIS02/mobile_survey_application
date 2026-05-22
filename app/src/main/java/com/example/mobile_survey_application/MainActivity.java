@@ -12,7 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import viewmodel.survey_viewmodel;
+import viewmodel.SurveyViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        Log.v("test", "test : " + survey_viewmodel.request_user_id() );
 
         // >> 화면을 클릭하거나 가만히 5초간 있으면 다음화면으로 넘어감, 이때 로그인 정보가 있다면 Home으로 그렇지 않으면 튜토리얼로
         LinearLayout root = findViewById(R.id.root_layout);
@@ -58,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private void startApplication(){
         autoHomeHandler.removeCallbacks(runable_delay);
 
-        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+//        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+        Intent intent = new Intent(MainActivity.this, LoginTestActivity.class);
         startActivity(intent);
 
         finish();

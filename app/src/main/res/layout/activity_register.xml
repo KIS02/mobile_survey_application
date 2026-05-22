@@ -1,126 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <LinearLayout
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="회원가입"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp" />
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="이름" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-        <EditText
-            android:id="@+id/et_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="이름"
-            android:layout_marginBottom="16dp" />
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="전화번호" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-        <EditText
-            android:id="@+id/et_telephone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="010-0000-0000"
-            android:inputType="phone"
-            android:layout_marginBottom="16dp" />
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="닉네임" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-        <EditText
-            android:id="@+id/et_nickname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="닉네임"
-            android:layout_marginBottom="16dp" />
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="성별" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-        <RadioGroup
-            android:id="@+id/rg_gender"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
-            <RadioButton android:id="@+id/rb_male"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="남성" android:layout_marginEnd="16dp"/>
-            <RadioButton android:id="@+id/rb_female"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="여성" />
-        </RadioGroup>
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="생년월일" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-        <EditText
-            android:id="@+id/et_birth_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="YYYY-MM-DD"
-            android:layout_marginBottom="16dp" />
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="거주지" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-        <EditText
-            android:id="@+id/et_region"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="거주지"
-            android:layout_marginBottom="16dp" />
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="직업" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-        <EditText
-            android:id="@+id/et_occupation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="직업"
-            android:layout_marginBottom="24dp" />
-
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="관심 카테고리 (최대 5개, 선택 순서 = 선호도 순위)"
-            android:textStyle="bold" android:layout_marginBottom="8dp"/>
-
-        <TextView
-            android:id="@+id/tv_selected_categories"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="선택된 카테고리: 없음"
-            android:textColor="#888888"
-            android:layout_marginBottom="8dp"/>
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/ll_categories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginBottom="32dp"/>
+            android:padding="24dp">
 
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="center"
-            android:layout_marginBottom="16dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="회원가입"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp" />
 
-        <Button
-            android:id="@+id/btn_register"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:text="가입 완료"
-            android:layout_marginBottom="16dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="이름" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/et_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="이름"
+                android:layout_marginBottom="16dp" />
 
-    </LinearLayout>
-</ScrollView>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="전화번호" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/et_telephone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="010-0000-0000"
+                android:inputType="phone"
+                android:layout_marginBottom="16dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="닉네임" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/et_nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="닉네임"
+                android:layout_marginBottom="16dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="성별" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+            <RadioGroup
+                android:id="@+id/rg_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <RadioButton android:id="@+id/rb_male"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="남성" android:layout_marginEnd="16dp"/>
+                <RadioButton android:id="@+id/rb_female"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="여성" />
+            </RadioGroup>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="생년월일" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/et_birth_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="YYYY-MM-DD"
+                android:layout_marginBottom="16dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="거주지" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/et_region"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="거주지"
+                android:layout_marginBottom="16dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="직업" android:textStyle="bold" android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/et_occupation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="직업"
+                android:layout_marginBottom="24dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="관심 카테고리 (최대 5개, 선택 순서 = 선호도 순위)"
+                android:textStyle="bold" android:layout_marginBottom="8dp"/>
+                    <!-- Category -->
+
+            <LinearLayout
+                android:id="@+id/btnCategory"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="@drawable/bg_mypage_card"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="관심 카테고리"
+                        android:textColor="#999999"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/btnCategoryText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="음식, 여행, 동물"
+                        android:textColor="#222222"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="›"
+                    android:textColor="#111111"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="32dp"/>
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btn_register"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="16dp"
+                android:text="다음" />
+
+        </LinearLayout>
+    </ScrollView>
+    <!-- FragmentCategoryChange가 들어갈 자리 -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</FrameLayout>

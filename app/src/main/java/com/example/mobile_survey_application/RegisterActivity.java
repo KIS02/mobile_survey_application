@@ -2,6 +2,7 @@ package com.example.mobile_survey_application;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,6 +16,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.mobile_survey_application.fragment.FragmentCategoryChange;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +39,18 @@ public class RegisterActivity extends AppCompatActivity {
     private RadioGroup rgGender;
     private RadioButton rbMale, rbFemale;
     private LinearLayout llCategories;
-    private TextView tvSelectedCategories;
+    private LinearLayout btnCategories;
+    private TextView btnCategoriesText;
     private Button btnRegister;
     private ProgressBar progressBar;
 
     private String tempToken;
-    private final List<Long> selectedCategoryIds = new ArrayList<>();
     private final List<CategoryResponse> categoryList = new ArrayList<>();
+
+    // 임시로 만들어놓은 CategoryIdes 변수입니다. 추후 서버를 통해 전송받게 수정해야 합니다.
+    private Long[] categoryIds = {1L, 2L, 3L, 4L, 5L, 6L};
+    private String[] categoryNames = {"음식", "여행", "동물", "게임", "IT", "스포츠"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +70,9 @@ public class RegisterActivity extends AppCompatActivity {
         rbMale = findViewById(R.id.rb_male);
         rbFemale = findViewById(R.id.rb_female);
         llCategories = findViewById(R.id.ll_categories);
-        tvSelectedCategories = findViewById(R.id.tv_selected_categories);
+        //tvSelectedCategories = findViewById(R.id.tv_selected_categories); 이거 대신 아래코드사용으로 변경
+        btnCategories = findViewById(R.id.btnCategory);
+        btnCategoriesText = findViewById(R.id.btnCategoryText);
         btnRegister = findViewById(R.id.btn_register);
         progressBar = findViewById(R.id.progress_bar);
 
@@ -73,20 +85,19 @@ public class RegisterActivity extends AppCompatActivity {
 
         observeViewModel();
 
+
+
         btnRegister.setOnClickListener(v -> submitRegister());
     }
-
     private void observeViewModel() {
         authViewModel.getIsLoading().observe(this, isLoading -> {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             btnRegister.setEnabled(!isLoading);
         });
 
-        authViewModel.getCategories().observe(this, this::renderCategoryCheckBoxes);
-
         authViewModel.getRegisterResult().observe(this, response -> {
             Toast.makeText(this, "회원가입 완료! 홈으로 이동합니다.", Toast.LENGTH_SHORT).show();
-            // 실제 서비스에서는 HomeActivity 등으로 이동
+
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -95,50 +106,79 @@ public class RegisterActivity extends AppCompatActivity {
         authViewModel.getErrorMessage().observe(this, message ->
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         );
+        authViewModel.getSelectedCategoryIds().observe(this, ids -> {
+            updateSelectedCategoryText();
+        });
+
+        // 카테고리 버튼기능 Fragment + ViewModel 통합
+        observeBtnCategory();
+
     }
 
-    private void renderCategoryCheckBoxes(List<CategoryResponse> categories) {
-        categoryList.clear();
-        categoryList.addAll(categories);
-        llCategories.removeAllViews();
+    // 카테고리 기능
+    private void observeBtnCategory() {
+        View btnCategory = findViewById(R.id.btnCategory);
 
-        for (CategoryResponse category : categories) {
-            CheckBox checkBox = new CheckBox(this);
-            checkBox.setText(category.getName());
-            checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    if (selectedCategoryIds.size() >= 5) {
-                        checkBox.setChecked(false);
-                        Toast.makeText(this, "최대 5개까지 선택 가능합니다.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    selectedCategoryIds.add(category.getId());
-                } else {
-                    selectedCategoryIds.remove(category.getId());
+        btnCategory.setOnClickListener(v -> {
+            Toast.makeText(this, "카테고리 클릭됨", Toast.LENGTH_SHORT).show();
+            authViewModel.onCategoryClick();
+        });
+
+        authViewModel.getNavigateToCategoryChange().observe(this, shouldNavigate -> {
+            if (Boolean.TRUE.equals(shouldNavigate)) {
+
+                View fragmentContainer = findViewById(R.id.fragment_container);
+
+                if (fragmentContainer == null) {
+                    Toast.makeText(this, "fragment_container를 못 찾음", Toast.LENGTH_SHORT).show();
+                    authViewModel.doneNavigateToCategoryChange();
+                    return;
                 }
-                updateSelectedCategoryText();
-            });
-            llCategories.addView(checkBox);
-        }
+
+                fragmentContainer.setVisibility(View.VISIBLE);
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new FragmentCategoryChange())
+                        .addToBackStack(null)
+                        .commit();
+
+                authViewModel.doneNavigateToCategoryChange();
+            }
+        });
     }
 
     private void updateSelectedCategoryText() {
-        if (selectedCategoryIds.isEmpty()) {
-            tvSelectedCategories.setText("선택된 카테고리: 없음");
+        List<Long> selectedCategoryIds = authViewModel.getSelectedCategoryIds().getValue();
+
+        if (selectedCategoryIds == null || selectedCategoryIds.isEmpty()) {
+            btnCategoriesText.setText("선택된 카테고리: 없음");
             return;
         }
+
         StringBuilder sb = new StringBuilder("선택된 카테고리: ");
+
         for (int i = 0; i < selectedCategoryIds.size(); i++) {
             Long id = selectedCategoryIds.get(i);
-            for (CategoryResponse c : categoryList) {
-                if (c.getId().equals(id)) {
-                    sb.append(c.getName());
-                    if (i < selectedCategoryIds.size() - 1) sb.append(", ");
-                    break;
-                }
+
+            sb.append(getCategoryNameById(id));
+
+            if (i < selectedCategoryIds.size() - 1) {
+                sb.append(", ");
             }
         }
-        tvSelectedCategories.setText(sb.toString());
+
+        btnCategoriesText.setText(sb.toString());
+    }
+
+    private String getCategoryNameById(Long id) {
+        for (int i = 0; i < categoryIds.length; i++) {
+            if (categoryIds[i].equals(id)) {
+                return categoryNames[i];
+            }
+        }
+
+        return "알 수 없음";
     }
 
     private void submitRegister() {
@@ -162,11 +202,27 @@ public class RegisterActivity extends AppCompatActivity {
         }
         String gender = (selectedGenderId == R.id.rb_male) ? "MALE" : "FEMALE";
 
+        List<Long> selectedCategoryIds = authViewModel.getSelectedCategoryIds().getValue();
+
+        if (selectedCategoryIds == null || selectedCategoryIds.isEmpty()) {
+            Toast.makeText(this, "카테고리를 1개 이상 선택해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         RegisterRequest request = new RegisterRequest(
                 name, telephone, nickname, gender, birthDate, region, occupation,
                 new ArrayList<>(selectedCategoryIds)
         );
-
+        // 임시 로그찍는용
+        Log.d("REGISTER_DEBUG", "tempToken = " + tempToken);
+        Log.d("REGISTER_DEBUG", "name = " + name);
+        Log.d("REGISTER_DEBUG", "telephone = " + telephone);
+        Log.d("REGISTER_DEBUG", "nickname = " + nickname);
+        Log.d("REGISTER_DEBUG", "gender = " + gender);
+        Log.d("REGISTER_DEBUG", "birthDate = " + birthDate);
+        Log.d("REGISTER_DEBUG", "region = " + region);
+        Log.d("REGISTER_DEBUG", "occupation = " + occupation);
+        Log.d("REGISTER_DEBUG", "selectedCategoryIds = " + selectedCategoryIds);
         authViewModel.register(tempToken, request);
     }
 }
