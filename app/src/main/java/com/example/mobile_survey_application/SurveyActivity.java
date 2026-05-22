@@ -217,7 +217,6 @@ public class SurveyActivity extends AppCompatActivity {
                     clearAutoSavedSurvey(); // 자동저장 삭제
 
                     showSubmitSuccessToast();
-
                     Intent intent = new Intent(SurveyActivity.this, HomeActivity.class);
                     startActivity(intent);
                 })
