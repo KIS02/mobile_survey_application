@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import java.util.List;
 
 import data.repository.RewardRepository;
+import model.CouponResponse;
 import model.RewardResponse;
 
 public class RewardViewModel extends ViewModel {
@@ -16,10 +17,14 @@ public class RewardViewModel extends ViewModel {
     private final RewardRepository rewardRepository = new RewardRepository();
 
     private final MutableLiveData<List<RewardResponse>> rewards = new MutableLiveData<>();
+    private final MutableLiveData<CouponResponse> exchangeResult = new MutableLiveData<>();
+    private final MutableLiveData<String> exchangeErrorMessage = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     public LiveData<List<RewardResponse>> getRewards() { return rewards; }
+    public LiveData<CouponResponse> getExchangeResult() { return exchangeResult; }
+    public LiveData<String> getExchangeErrorMessage() { return exchangeErrorMessage; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
@@ -36,6 +41,23 @@ public class RewardViewModel extends ViewModel {
             public void onFailure(String message) {
                 isLoading.postValue(false);
                 errorMessage.postValue(message);
+            }
+        });
+    }
+
+    public void exchangeReward(String accessToken, Long rewardId) {
+        isLoading.setValue(true);
+        rewardRepository.exchangeReward(accessToken, rewardId, new RewardRepository.ExchangeCallback() {
+            @Override
+            public void onSuccess(CouponResponse coupon) {
+                isLoading.postValue(false);
+                exchangeResult.postValue(coupon);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                isLoading.postValue(false);
+                exchangeErrorMessage.postValue(message);
             }
         });
     }
