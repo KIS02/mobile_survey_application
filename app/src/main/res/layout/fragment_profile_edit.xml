@@ -94,11 +94,12 @@
                             android:textSize="12sp" />
 
                         <EditText
+                            android:id="@+id/etProfileName"
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
+                            android:hint="이름"
                             android:paddingStart="0dp"
-                            android:text="홍길동"
                             android:textColor="#222222"
                             android:textSize="15sp" />
 
@@ -123,11 +124,12 @@
                             android:textSize="12sp" />
 
                         <EditText
+                            android:id="@+id/etProfileTelephone"
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
+                            android:hint="전화번호"
                             android:paddingStart="0dp"
-                            android:text="010 - 1234 - 5678"
                             android:textColor="#222222"
                             android:textSize="15sp" />
 
@@ -152,11 +154,12 @@
                             android:textSize="12sp" />
 
                         <EditText
+                            android:id="@+id/etProfileNickname"
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
+                            android:hint="닉네임"
                             android:paddingStart="0dp"
-                            android:text="길동이"
                             android:textColor="#222222"
                             android:textSize="15sp" />
 
@@ -181,11 +184,12 @@
                             android:textSize="12sp" />
 
                         <EditText
+                            android:id="@+id/etProfileBirthDate"
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
+                            android:hint="YYYY-MM-DD"
                             android:paddingStart="0dp"
-                            android:text="2000. 01. 01."
                             android:textColor="#222222"
                             android:textSize="15sp" />
 
@@ -210,11 +214,12 @@
                             android:textSize="12sp" />
 
                         <EditText
+                            android:id="@+id/etProfileLocation"
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
+                            android:hint="거주지"
                             android:paddingStart="0dp"
-                            android:text="성남시 수정구"
                             android:textColor="#222222"
                             android:textSize="15sp" />
 
@@ -239,11 +244,12 @@
                             android:textSize="12sp" />
 
                         <EditText
+                            android:id="@+id/etProfileRegion"
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
+                            android:hint="지역"
                             android:paddingStart="0dp"
-                            android:text="경기도"
                             android:textColor="#222222"
                             android:textSize="15sp" />
 
@@ -285,10 +291,11 @@
                             android:textSize="12sp" />
 
                         <TextView
+                            android:id="@+id/txtCategory"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="음식, 여행, 동물"
+                            android:text="선택된 카테고리: 없음"
                             android:textColor="#222222"
                             android:textSize="15sp"
                             android:textStyle="bold" />

@@ -26,6 +26,7 @@ public class LoginTestActivity extends AppCompatActivity {
 
     // 구글 클라이언트 아이디
     private static final String WEB_CLIENT_ID = "947790610190-k6bsq5uob4g82fh2nme2abo8o43npv83.apps.googleusercontent.com";
+    private static final String TAG_LOGIN_DEBUG = "LOGIN_DEBUG";
 
     private AuthViewModel authViewModel;
     private GoogleSignInClient googleSignInClient;
@@ -40,6 +41,8 @@ public class LoginTestActivity extends AppCompatActivity {
                 try {
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     String idToken = account.getIdToken();
+                android.util.Log.d(TAG_LOGIN_DEBUG,
+                        "google idToken exists=" + (idToken != null && !idToken.isEmpty()));
                     authViewModel.googleLogin(idToken);
                 } catch (ApiException e) {
                     tvResult.setText("구글 로그인 실패: " + e.getStatusCode());
@@ -98,7 +101,7 @@ public class LoginTestActivity extends AppCompatActivity {
         });
 
         authViewModel.getRegisterResult().observe(this, response ->
-                tvResult.setText("회원가입 완료!\naccessToken: " + response.getAccessToken())
+                tvResult.setText("회원가입 완료!\n토큰 저장 완료")
         );
 
         authViewModel.getErrorMessage().observe(this, message -> {

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -19,8 +18,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.mobile_survey_application.fragment.FragmentCategoryChange;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     public static final String EXTRA_TEMP_TOKEN = "extra_temp_token";
     public static final String EXTRA_NAME = "extra_name";
+    private static final String TAG_CATEGORY_DEBUG = "CATEGORY_DEBUG";
 
     private AuthViewModel authViewModel;
 
@@ -46,11 +44,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private String tempToken;
     private final List<CategoryResponse> categoryList = new ArrayList<>();
-
-    // 임시로 만들어놓은 CategoryIdes 변수입니다. 추후 서버를 통해 전송받게 수정해야 합니다.
-    private Long[] categoryIds = {1L, 2L, 3L, 4L, 5L, 6L};
-    private String[] categoryNames = {"음식", "여행", "동물", "게임", "IT", "스포츠"};
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +77,13 @@ public class RegisterActivity extends AppCompatActivity {
         authViewModel.loadCategories();
 
         observeViewModel();
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            View fragmentContainer = findViewById(R.id.fragment_container);
+            if (fragmentContainer != null
+                    && getSupportFragmentManager().getBackStackEntryCount() == 0) {
+                fragmentContainer.setVisibility(View.GONE);
+            }
+        });
 
 
 
@@ -97,16 +97,27 @@ public class RegisterActivity extends AppCompatActivity {
 
         authViewModel.getRegisterResult().observe(this, response -> {
             Toast.makeText(this, "회원가입 완료! 홈으로 이동합니다.", Toast.LENGTH_SHORT).show();
+            Log.d("REGISTER_DEBUG", "register success navigate HomeActivity");
+            Log.d("REGISTER_DEBUG", "register success clear auth stack");
 
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            finish();
         });
 
         authViewModel.getErrorMessage().observe(this, message ->
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         );
         authViewModel.getSelectedCategoryIds().observe(this, ids -> {
+            updateSelectedCategoryText();
+        });
+
+        authViewModel.getCategories().observe(this, categories -> {
+            categoryList.clear();
+            if (categories != null) {
+                categoryList.addAll(categories);
+            }
             updateSelectedCategoryText();
         });
 
@@ -137,9 +148,15 @@ public class RegisterActivity extends AppCompatActivity {
 
                 fragmentContainer.setVisibility(View.VISIBLE);
 
+                Bundle bundle = new Bundle();
+                bundle.putString("mode", FragmentCategoryChange.MODE_REGISTER);
+
+                FragmentCategoryChange fragment = new FragmentCategoryChange();
+                fragment.setArguments(bundle);
+
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, new FragmentCategoryChange())
+                        .replace(R.id.fragment_container, fragment)
                         .addToBackStack(null)
                         .commit();
 
@@ -172,9 +189,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private String getCategoryNameById(Long id) {
-        for (int i = 0; i < categoryIds.length; i++) {
-            if (categoryIds[i].equals(id)) {
-                return categoryNames[i];
+        for (CategoryResponse category : categoryList) {
+            if (category.getId().equals(id)) {
+                return category.getName();
             }
         }
 
@@ -186,11 +203,12 @@ public class RegisterActivity extends AppCompatActivity {
         String telephone = etTelephone.getText().toString().trim();
         String nickname = etNickname.getText().toString().trim();
         String birthDate = etBirthDate.getText().toString().trim();
-        String region = etRegion.getText().toString().trim();
+        String location = etRegion.getText().toString().trim();
+        String region = location;
         String occupation = etOccupation.getText().toString().trim();
 
         if (name.isEmpty() || telephone.isEmpty() || nickname.isEmpty()
-                || birthDate.isEmpty() || region.isEmpty() || occupation.isEmpty()) {
+                || birthDate.isEmpty() || location.isEmpty() || occupation.isEmpty()) {
             Toast.makeText(this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -204,25 +222,27 @@ public class RegisterActivity extends AppCompatActivity {
 
         List<Long> selectedCategoryIds = authViewModel.getSelectedCategoryIds().getValue();
 
-        if (selectedCategoryIds == null || selectedCategoryIds.isEmpty()) {
-            Toast.makeText(this, "카테고리를 1개 이상 선택해주세요.", Toast.LENGTH_SHORT).show();
+        if (selectedCategoryIds == null || selectedCategoryIds.size() != 3) {
+            Toast.makeText(this, "카테고리를 3개 선택해주세요.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         RegisterRequest request = new RegisterRequest(
-                name, telephone, nickname, gender, birthDate, region, occupation,
+                name, telephone, nickname, gender, birthDate, location, region, occupation,
                 new ArrayList<>(selectedCategoryIds)
         );
-        // 임시 로그찍는용
-        Log.d("REGISTER_DEBUG", "tempToken = " + tempToken);
-        Log.d("REGISTER_DEBUG", "name = " + name);
-        Log.d("REGISTER_DEBUG", "telephone = " + telephone);
-        Log.d("REGISTER_DEBUG", "nickname = " + nickname);
-        Log.d("REGISTER_DEBUG", "gender = " + gender);
-        Log.d("REGISTER_DEBUG", "birthDate = " + birthDate);
-        Log.d("REGISTER_DEBUG", "region = " + region);
-        Log.d("REGISTER_DEBUG", "occupation = " + occupation);
-        Log.d("REGISTER_DEBUG", "selectedCategoryIds = " + selectedCategoryIds);
+        Log.d("REGISTER_DEBUG", "register request categoryIds=" + selectedCategoryIds);
+        Log.d("REGISTER_DEBUG", "register request name exists=" + !name.isEmpty());
+        Log.d("REGISTER_DEBUG", "register request phone exists=" + !telephone.isEmpty());
+        Log.d("REGISTER_DEBUG", "register request nickname exists=" + !nickname.isEmpty());
+        Log.d("REGISTER_DEBUG", "register request birthDate=" + birthDate);
+        Log.d("REGISTER_DEBUG", "register request gender=" + gender);
+        Log.d("REGISTER_DEBUG", "register request location exists=" + !location.isEmpty());
+        Log.d("REGISTER_DEBUG", "register request region exists=" + !region.isEmpty());
+        Log.d("REGISTER_DEBUG", "register request occupation exists=" + !occupation.isEmpty());
+        Log.d("REGISTER_DEBUG", "register request tempToken exists="
+                + (tempToken != null && !tempToken.isEmpty()));
+        Log.d(TAG_CATEGORY_DEBUG, "signup category selectedIds=" + selectedCategoryIds);
         authViewModel.register(tempToken, request);
     }
 }

@@ -55,18 +55,20 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/txtProfileName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="홍길동"
+                            android:text="사용자"
                             android:textColor="#222222"
                             android:textSize="15sp"
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/txtProfileEmail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="6dp"
-                            android:text="hong@gmail.com"
+                            android:text="이메일 정보 없음"
                             android:textColor="#555555"
                             android:textSize="13sp" />
                     </LinearLayout>
