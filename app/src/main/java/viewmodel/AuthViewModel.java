@@ -81,6 +81,8 @@ public class AuthViewModel extends AndroidViewModel {
                     // 기존 회원 → 토큰 저장
                     tokenManager.saveTokens(response.getAccessToken(), response.getRefreshToken());
                     Log.d(TAG_LOGIN_DEBUG, "saved token exists=" + tokenManager.hasToken());
+                    Log.d(TAG_LOGIN_DEBUG, "accessToken=" + response.getAccessToken());
+                    Log.d(TAG_LOGIN_DEBUG, "refreshToken=" + response.getRefreshToken());
                 }
                 loginResult.postValue(response);
             }
@@ -102,6 +104,8 @@ public class AuthViewModel extends AndroidViewModel {
                 // 신규 회원 가입 완료 → 토큰 저장
                 tokenManager.saveTokens(response.getAccessToken(), response.getRefreshToken());
                 Log.d(TAG_LOGIN_DEBUG, "register success, saved token exists=" + tokenManager.hasToken());
+                Log.d(TAG_LOGIN_DEBUG, "accessToken=" + response.getAccessToken());
+                Log.d(TAG_LOGIN_DEBUG, "refreshToken=" + response.getRefreshToken());
                 registerResult.postValue(response);
             }
 
@@ -209,6 +213,7 @@ public class AuthViewModel extends AndroidViewModel {
     public void loadMyProfile() {
         String accessToken = tokenManager.getAccessToken();
         Log.d(TAG_PROFILE_DEBUG, "profile auth token exists=" + (accessToken != null && !accessToken.isEmpty()));
+        Log.d(TAG_PROFILE_DEBUG, "accessToken=" + accessToken);
 
         if (accessToken == null || accessToken.isEmpty()) {
             errorMessage.postValue("로그인이 필요합니다.");
@@ -265,6 +270,7 @@ public class AuthViewModel extends AndroidViewModel {
     public void updateMyProfile(UserUpdateRequest request) {
         String accessToken = tokenManager.getAccessToken();
         Log.d(TAG_PROFILE_DEBUG, "profile auth token exists=" + (accessToken != null && !accessToken.isEmpty()));
+        Log.d(TAG_PROFILE_DEBUG, "accessToken=" + accessToken);
 
         if (accessToken == null || accessToken.isEmpty()) {
             profileUpdateError.postValue("로그인이 필요합니다.");
@@ -318,6 +324,7 @@ public class AuthViewModel extends AndroidViewModel {
             return;
         }
         Log.d(TAG_LOGIN_DEBUG, "auth header will be attached=true");
+        Log.d(TAG_CATEGORY_DEBUG, "accessToken=" + accessToken);
 
         UserCategoryUpdateRequest request = new UserCategoryUpdateRequest(categoryIds);
         Log.d(TAG_CATEGORY_DEBUG, "updateMyCategories request categoryIds=" + categoryIds);
