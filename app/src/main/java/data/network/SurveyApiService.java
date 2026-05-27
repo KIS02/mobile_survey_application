@@ -4,7 +4,7 @@ import java.util.List;
 
 import model.AnswerSubmitRequest;
 import model.ApiResponse;
-import model.ReliabilityResponse;
+import model.SurveySubmitResponse;
 import model.SurveyDetailResponse;
 import model.SurveyResponse;
 import retrofit2.Call;
@@ -33,7 +33,7 @@ public interface SurveyApiService {
     );
 
     @POST("api/surveys/{surveyId}/responses")
-    Call<ApiResponse<ReliabilityResponse>> submitResponses(
+    Call<ApiResponse<SurveySubmitResponse>> submitResponses(
             @Header("Authorization") String bearerToken,
             @Path("surveyId") Long surveyId,
             @Body AnswerSubmitRequest request
