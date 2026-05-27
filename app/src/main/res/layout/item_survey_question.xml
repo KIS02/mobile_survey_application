@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_question_box"
+    android:layout_width="match_parent"
+    android:layout_height="125dp"
+    android:layout_marginTop="18dp"
+    android:orientation="vertical"
+    android:background="@drawable/survey_box"
+    android:paddingStart="14dp"
+    android:paddingTop="14dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="14dp">
+
+    <TextView
+        android:id="@+id/tv_question_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1. 질문 내용"
+        android:textSize="11sp"
+        android:textColor="#333333" />
+
+    <LinearLayout
+        android:id="@+id/choice_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:orientation="horizontal"
+        android:gravity="center" />
+
+</LinearLayout>

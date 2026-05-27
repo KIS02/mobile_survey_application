@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/itemSurveyCard"
+    android:layout_width="match_parent"
+    android:layout_height="92dp"
+    android:background="@drawable/bg_survey_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:padding="14dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/surveyTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="설문 제목"
+            android:textColor="#111111"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/surveyTagLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/surveyPointText"
+        android:layout_width="72dp"
+        android:layout_height="26dp"
+        android:layout_gravity="top|end"
+        android:background="@drawable/bg_survey_point_badge"
+        android:gravity="center"
+        android:text="20 points ✨"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+</FrameLayout>

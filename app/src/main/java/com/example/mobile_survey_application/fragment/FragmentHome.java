@@ -19,6 +19,12 @@ import com.example.mobile_survey_application.R;
 
 import java.util.Arrays;
 
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
 public class FragmentHome extends Fragment {
 
     private ViewPager2 randomSurveySlideView;
@@ -45,13 +51,14 @@ public class FragmentHome extends Fragment {
 
         answers = new int[questions.length];
         Arrays.fill(answers, -1);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
 
         TextView randomSurveyButton = view.findViewById(R.id.randomSurveyButton);
         LinearLayout questionLayout = view.findViewById(R.id.questionLayout);
@@ -95,6 +102,9 @@ public class FragmentHome extends Fragment {
                 checkRandomSurveyFinished();
             }
         });
+
+
+        resizeRandomSurveyBox(view);
 
         return view;
     }
@@ -210,4 +220,74 @@ public class FragmentHome extends Fragment {
 
         return -1;
     }
+
+    //region ### 화면 크기 자동 조절 함수 ###
+    private void resizeRandomSurveyBox(View root) {
+        View contentArea = root.findViewById(R.id.contentArea);
+        View randomHeader = root.findViewById(R.id.randomHeader);
+        View selectHeader = root.findViewById(R.id.selectHeader);
+        View sectionDivider = root.findViewById(R.id.sectionDivider);
+        FrameLayout randomSurveyBox = root.findViewById(R.id.randomSurveyBox);
+
+        contentArea.post(() -> {
+
+            // randomSurveyBox의 가로는 항상 match_parent 기준
+            int parentWidth = contentArea.getWidth();
+
+            // 기본 비율: 16:9
+            // height = width * 9 / 16
+            int desiredRandomBoxHeight = parentWidth * 3 / 4;
+
+            // 아래 ScrollView 안에 최소 설문 카드 1개가 보이도록 확보할 높이
+            // 카드 높이 92dp + 여유 공간
+            int minScrollAreaHeight = dp(80);
+
+            int fixedHeight =
+                    randomHeader.getHeight()
+                            + getVerticalMargins(randomSurveyBox)
+                            + sectionDivider.getHeight()
+                            + getVerticalMargins(sectionDivider)
+                            + selectHeader.getHeight()
+                            + dp(12) // ScrollView marginTop
+                            + minScrollAreaHeight;
+
+            int maxRandomBoxHeight = contentArea.getHeight() - fixedHeight;
+
+            // 너무 작아지는 것 방지
+            if (maxRandomBoxHeight < dp(80)) {
+                maxRandomBoxHeight = dp(80);
+            }
+
+            // 기본은 16:9 높이,
+            // 하지만 아래 선택 설문 카드 1개가 안 들어가면 높이만 줄임
+            int finalHeight = Math.min(desiredRandomBoxHeight, maxRandomBoxHeight);
+
+            LinearLayout.LayoutParams params =
+                    (LinearLayout.LayoutParams) randomSurveyBox.getLayoutParams();
+
+            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            params.height = finalHeight;
+
+            randomSurveyBox.setLayoutParams(params);
+        });
+    }
+
+    private int getVerticalMargins(View view) {
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+
+        if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams marginParams =
+                    (ViewGroup.MarginLayoutParams) layoutParams;
+
+            return marginParams.topMargin + marginParams.bottomMargin;
+        }
+
+        return 0;
+    }
+
+    private int dp(int value) {
+        return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
+    }
+    //endregion
+
 }
