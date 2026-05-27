@@ -30,6 +30,11 @@ public class UserRepository {
         void onFailure(String errorMessage);
     }
 
+    public interface WithdrawCallback {
+        void onSuccess();
+        void onFailure(String errorMessage);
+    }
+
     public void getMe(String accessToken, UserCallback callback) {
         RetrofitClient.getUserApiService().getMe("Bearer " + accessToken).enqueue(new Callback<ApiResponse<UserResponse>>() {
             @Override
@@ -120,6 +125,25 @@ public class UserRepository {
 
             @Override
             public void onFailure(Call<ApiResponse<List<CreditHistoryResponse>>> call, Throwable t) {
+                callback.onFailure("네트워크 오류: " + t.getMessage());
+            }
+        });
+    }
+
+    public void withdraw(String accessToken, WithdrawCallback callback) {
+        RetrofitClient.getUserApiService().withdraw("Bearer " + accessToken).enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call,
+                                   Response<ApiResponse<Void>> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure("서버 오류: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
                 callback.onFailure("네트워크 오류: " + t.getMessage());
             }
         });

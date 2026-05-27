@@ -109,7 +109,9 @@ public class FragmentCouponBox extends Fragment {
             BarcodeEncoder encoder = new BarcodeEncoder();
             return encoder.encodeBitmap(content, BarcodeFormat.CODE_128, 800, 200);
         } catch (Exception e) {
-            Toast.makeText(getContext(), "바코드 생성 실패", Toast.LENGTH_SHORT).show();
+            if (isAdded() && getContext() != null) {
+                Toast.makeText(getContext(), "바코드 생성 실패", Toast.LENGTH_SHORT).show();
+            }
             return null;
         }
     }
