@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import data.network.RetrofitClient;
 import model.AnswerSubmitRequest;
 import model.ApiResponse;
-import model.ReliabilityResponse;
+import model.SurveySubmitResponse;
 import model.SurveyDetailResponse;
 import model.SurveyResponse;
 import retrofit2.Call;
@@ -34,7 +34,7 @@ public class SurveyRepository {
     }
 
     public interface SubmitCallback {
-        void onSuccess(ReliabilityResponse response);
+        void onSuccess(SurveySubmitResponse response);
         void onFailure(String errorMessage);
     }
 
@@ -203,10 +203,10 @@ public class SurveyRepository {
 
         RetrofitClient.getSurveyApiService()
                 .submitResponses("Bearer " + accessToken, surveyId, request)
-                .enqueue(new Callback<ApiResponse<ReliabilityResponse>>() {
+                .enqueue(new Callback<ApiResponse<SurveySubmitResponse>>() {
                     @Override
-                    public void onResponse(Call<ApiResponse<ReliabilityResponse>> call,
-                                           Response<ApiResponse<ReliabilityResponse>> response) {
+                    public void onResponse(Call<ApiResponse<SurveySubmitResponse>> call,
+                                           Response<ApiResponse<SurveySubmitResponse>> response) {
                         if (response.isSuccessful()
                                 && response.body() != null
                                 && response.body().getData() != null) {
@@ -223,7 +223,7 @@ public class SurveyRepository {
                     }
 
                     @Override
-                    public void onFailure(Call<ApiResponse<ReliabilityResponse>> call, Throwable t) {
+                    public void onFailure(Call<ApiResponse<SurveySubmitResponse>> call, Throwable t) {
                         Log.e(TAG_SURVEY_DEBUG, "submitResponses network error=" + t.getMessage(), t);
                         callback.onFailure("네트워크 오류: " + t.getMessage());
                     }

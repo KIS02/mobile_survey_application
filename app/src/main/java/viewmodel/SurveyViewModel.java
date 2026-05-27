@@ -13,7 +13,7 @@ import java.util.Map;
 
 import data.repository.SurveyRepository;
 import model.AnswerSubmitRequest;
-import model.ReliabilityResponse;
+import model.SurveySubmitResponse;
 import model.SurveyDetailResponse;
 import model.SurveyQuestionResponse;
 import model.SurveyResponse;
@@ -163,7 +163,7 @@ public class SurveyViewModel extends ViewModel {
 
         surveyRepository.submitSurvey(accessToken, currentSurveyId, request, new SurveyRepository.SubmitCallback() {
             @Override
-            public void onSuccess(ReliabilityResponse response) {
+            public void onSuccess(SurveySubmitResponse response) {
                 submitSuccess.postValue(true);
             }
 

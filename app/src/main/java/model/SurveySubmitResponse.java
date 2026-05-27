@@ -1,6 +1,6 @@
 package model;
 
-public class ReliabilityResponse {
+public class SurveySubmitResponse {
 
     private Integer earnedCredit;
 
