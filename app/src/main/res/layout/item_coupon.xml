@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="190dp"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="24dp"
     android:background="@drawable/bg_coupon_card"
     android:orientation="vertical">
@@ -73,5 +73,16 @@
         android:text="SBUX-1234-5678"
         android:textColor="#555555"
         android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/ivBarcode"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
 
 </LinearLayout>

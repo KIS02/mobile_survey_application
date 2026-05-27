@@ -18,8 +18,8 @@ public class WithdrawActivity extends AppCompatActivity {
         btnConfirmWithdraw = findViewById(R.id.btnConfirmWithdraw);
 
         btnConfirmWithdraw.setOnClickListener(v -> {
-            Intent intent = new Intent(WithdrawActivity.this, HomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent = new Intent(WithdrawActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         });
