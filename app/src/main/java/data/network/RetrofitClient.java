@@ -14,7 +14,7 @@ public class RetrofitClient {
     public static Retrofit getInstance() {
         if (retrofit == null) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
@@ -50,5 +50,10 @@ public class RetrofitClient {
     // [추가] 유저 정보 API (크레딧 조회 등)
     public static UserApiService getUserApiService() {
         return getInstance().create(UserApiService.class);
+    }
+
+    // [추가] 설문 API (GET /api/surveys/random, POST /api/surveys/{surveyId}/responses)
+    public static SurveyApiService getSurveyApiService() {
+        return getInstance().create(SurveyApiService.class);
     }
 }

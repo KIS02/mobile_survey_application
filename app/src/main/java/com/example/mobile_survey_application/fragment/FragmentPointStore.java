@@ -19,9 +19,12 @@ import com.example.mobile_survey_application.R;
 
 import java.util.List;
 
+import data.local.TokenManager;
 import data.network.RetrofitClient;
+import model.CouponResponse;
 import model.RewardResponse;
 import viewmodel.RewardViewModel;
+import viewmodel.UserViewModel;
 
 public class FragmentPointStore extends Fragment {
 
@@ -38,6 +41,8 @@ public class FragmentPointStore extends Fragment {
 
     // [추가] 리워드 API 연동을 위한 ViewModel
     private RewardViewModel rewardViewModel;
+    private UserViewModel userViewModel;
+    private TokenManager tokenManager;
 
     private TextView tvCurrentPoint;
     // [추가] 서버 응답으로 동적 바인딩할 뷰 배열
@@ -76,7 +81,7 @@ public class FragmentPointStore extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         tvCurrentPoint = view.findViewById(R.id.tvCurrentPoint);
-//        updateCurrentPointText(); // [AS-IS] 하드코딩 버전
+        tvCurrentPoint.setText("- P");
 
         // [추가] 서버 이미지 로딩용 ImageView (XML: ivRewardImage1~4)
         imageViews[0] = view.findViewById(R.id.ivRewardImage1);
@@ -125,13 +130,40 @@ public class FragmentPointStore extends Fragment {
 
         // [추가] GET /api/rewards 호출 → bindRewards()에서 UI 반영
         rewardViewModel = new ViewModelProvider(this).get(RewardViewModel.class);
+        userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        tokenManager = new TokenManager(requireContext());
 
         rewardViewModel.getRewards().observe(getViewLifecycleOwner(), this::bindRewards);
         rewardViewModel.getErrorMessage().observe(getViewLifecycleOwner(), message ->
                 Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
         );
+        rewardViewModel.getExchangeResult().observe(getViewLifecycleOwner(), coupon -> {
+            if (coupon == null) {
+                return;
+            }
+
+            showSuccessDialog(coupon);
+            loadMyCredit();
+        });
+        rewardViewModel.getExchangeErrorMessage().observe(getViewLifecycleOwner(), message -> {
+            if (message == null || message.isEmpty()) {
+                return;
+            }
+
+            showFailDialog(message);
+        });
+
+        userViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
+            if (user != null && user.getCredit() != null) {
+                tvCurrentPoint.setText(String.format("%,d P", user.getCredit()));
+            }
+        });
+        userViewModel.getErrorMessage().observe(getViewLifecycleOwner(), message ->
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+        );
 
         rewardViewModel.loadRewards();
+        loadMyCredit();
     }
 
     // [추가] API 응답으로 리워드 카드 UI 동적 바인딩
@@ -160,7 +192,11 @@ public class FragmentPointStore extends Fragment {
                 exchangeButtons[i].setAlpha(1.0f);
                 final RewardResponse r = reward;
                 exchangeButtons[i].setOnClickListener(v ->
-                        showConfirmDialog(r.getName(), r.getRequiredCredit())
+                        showConfirmDialog(
+                                r.getId(),
+                                r.getName(),
+                                r.getRequiredCredit() == null ? 0 : r.getRequiredCredit()
+                        )
                 );
             } else {
                 imageViews[i].setVisibility(View.GONE);
@@ -176,32 +212,45 @@ public class FragmentPointStore extends Fragment {
 //        tvCurrentPoint.setText(String.format("%,d P", currentPoint));
 //    }
 
-    private void showConfirmDialog(String productName, int requiredPoint) {
+    private void showConfirmDialog(Long rewardId, String productName, int requiredPoint) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("포인트를 사용하시겠어요?")
                 .setMessage(productName + "를 " + String.format("%,d", requiredPoint) + "P로 교환합니다.")
                 .setNegativeButton("취소", null)
                 .setPositiveButton("교환하기", (dialog, which) -> {
-                    // TODO: 교환 API 연동
-                    showSuccessDialog();
+                    String token = tokenManager.getAccessToken();
+                    if (token == null || token.isEmpty()) {
+                        showFailDialog("로그인이 필요합니다.");
+                        return;
+                    }
+
+                    rewardViewModel.exchangeReward(token, rewardId);
                 })
                 .show();
     }
 
-    private void showSuccessDialog() {
+    private void showSuccessDialog(CouponResponse coupon) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("교환이 완료되었습니다!")
-                .setMessage("쿠폰이 지급되었습니다.\n마이페이지에서 확인해주세요.")
+                .setMessage(coupon.getRewardName() + " 쿠폰이 지급되었습니다.\n마이페이지에서 확인해주세요.")
                 .setPositiveButton("확인", null)
                 .show();
     }
 
-    // 하드코딩 버전
-//    private void showFailDialog() {
-//        new AlertDialog.Builder(requireContext())
-//                .setTitle("포인트가 부족합니다.")
-//                .setMessage("현재 포인트로는 교환할 수 없습니다.")
-//                .setPositiveButton("확인", null)
-//                .show();
-//    }
+    private void showFailDialog(String message) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(message.contains("포인트") ? "포인트가 부족합니다." : "교환에 실패했습니다.")
+                .setMessage(message)
+                .setPositiveButton("확인", null)
+                .show();
+    }
+
+    private void loadMyCredit() {
+        String token = tokenManager.getAccessToken();
+        if (token != null && !token.isEmpty()) {
+            userViewModel.loadMe(token);
+        } else {
+            tvCurrentPoint.setText("로그인 필요");
+        }
+    }
 }
