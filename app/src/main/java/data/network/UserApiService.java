@@ -4,6 +4,7 @@ package data.network;
 import java.util.List;
 
 import model.ApiResponse;
+import model.CouponResponse;
 import model.CreditHistoryResponse;
 import model.UserCategoryUpdateRequest;
 import model.UserResponse;
