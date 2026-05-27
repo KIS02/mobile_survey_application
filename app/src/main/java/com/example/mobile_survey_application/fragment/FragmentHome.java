@@ -1,224 +1,295 @@
 package com.example.mobile_survey_application.fragment;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.ViewPager2;
-
-import com.example.mobile_survey_application.R;
-
-import java.util.Arrays;
-
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.mobile_survey_application.R;
+import com.example.mobile_survey_application.SurveyActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import data.local.TokenManager;
+import model.SurveyResponse;
+import viewmodel.SurveyViewModel;
 
 public class FragmentHome extends Fragment {
 
-    private ViewPager2 randomSurveySlideView;
-    private TextView randomSurveyProgressText;
-    private Button nextQuestionButton;
+    public static final String EXTRA_SURVEY_ID = "surveyId";
+    private static final String TAG_HOME_SURVEY_DEBUG = "HOME_SURVEY_DEBUG";
 
-    private final String[] questions = {
-            "나는 아침 식사를 자주 한다.",
-            "나는 하루 한 끼를 규칙적으로 먹는다.",
-            "나는 패스트푸드를 자주 섭취한다.",
-            "나는 야식을 자주 먹는다.",
-            "나는 채소를 자주 먹는다."
-    };
+    private TextView randomSurveyButton;
+    private LinearLayout questionLayout;
+    private LinearLayout selectSurveyList;
 
-    private int[] answers;
+    private TokenManager tokenManager;
+    private SurveyViewModel surveyViewModel;
+
+    private SurveyResponse randomSurvey;
 
     public FragmentHome() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        answers = new int[questions.length];
-        Arrays.fill(answers, -1);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        randomSurveyButton = view.findViewById(R.id.randomSurveyButton);
+        questionLayout = view.findViewById(R.id.questionLayout);
+        selectSurveyList = view.findViewById(R.id.selectSurveyList);
 
-        TextView randomSurveyButton = view.findViewById(R.id.randomSurveyButton);
-        LinearLayout questionLayout = view.findViewById(R.id.questionLayout);
+        tokenManager = new TokenManager(requireContext());
+        surveyViewModel = new ViewModelProvider(this).get(SurveyViewModel.class);
 
-        randomSurveySlideView = view.findViewById(R.id.randomSurveySlideView);
-        randomSurveyProgressText = view.findViewById(R.id.randomSurveyProgressText);
-        nextQuestionButton = view.findViewById(R.id.nextQuestionButton);
-
-        RandomSurveyAdapter adapter = new RandomSurveyAdapter();
-        randomSurveySlideView.setAdapter(adapter);
-
-        updateProgressText(0);
+        observeViewModel();
 
         randomSurveyButton.setOnClickListener(v -> {
-            randomSurveyButton.setVisibility(View.GONE);
-            questionLayout.setVisibility(View.VISIBLE);
-        });
-
-        randomSurveySlideView.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-
-                updateProgressText(position);
-
-                if (position == questions.length - 1) {
-                    nextQuestionButton.setText("완료");
-                } else {
-                    nextQuestionButton.setText("다음 항목");
-                }
+            if (randomSurvey == null) {
+                Toast.makeText(requireContext(), "불러온 설문이 없습니다.", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            showSurveyDialog(randomSurvey);
         });
-
-
-        nextQuestionButton.setOnClickListener(v -> {
-            int currentIndex = randomSurveySlideView.getCurrentItem();
-
-            if (currentIndex < questions.length - 1) {
-                randomSurveySlideView.setCurrentItem(currentIndex + 1, true);
-            } else {
-                checkRandomSurveyFinished();
-            }
-        });
-
 
         resizeRandomSurveyBox(view);
 
         return view;
     }
 
-    private void updateProgressText(int position) {
-        randomSurveyProgressText.setText((position + 1) + " / " + questions.length);
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadSurveys();
     }
 
-    private void checkRandomSurveyFinished() {
-        int latestUnansweredIndex = findFirstUnansweredQuestionIndex();
+    private void observeViewModel() {
+        surveyViewModel.getSurveyList().observe(getViewLifecycleOwner(), this::renderHomeSurveys);
 
-        if (latestUnansweredIndex != -1) {
-            Toast.makeText(
-                    requireContext(),
-                    "아직 응답하지 않은 문항이 있습니다.",
-                    Toast.LENGTH_SHORT
-            ).show();
+        surveyViewModel.getSurveyListError().observe(getViewLifecycleOwner(), message -> {
+            if (message == null || message.isEmpty()) {
+                return;
+            }
 
-            randomSurveySlideView.setCurrentItem(latestUnansweredIndex, true);
+            Log.e(TAG_HOME_SURVEY_DEBUG,
+                    "UI failure state: loadSurveys failed, message=" + message);
+
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void loadSurveys() {
+        if (tokenManager == null) {
             return;
         }
 
-        Toast.makeText(
-                requireContext(),
-                "랜덤 설문이 완료되었습니다.",
-                Toast.LENGTH_SHORT
-        ).show();
+        String accessToken = tokenManager.getAccessToken();
 
-        // 여기서 서버 전송, 포인트 지급, 저장 처리
-    }
-
-    private int findFirstUnansweredQuestionIndex() {
-        for (int i = 0; i < answers.length; i++) {
-            if (answers[i] == -1) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private class RandomSurveyAdapter extends RecyclerView.Adapter<RandomSurveyAdapter.RandomSurveyViewHolder> {
-
-        @NonNull
-        @Override
-        public RandomSurveyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_survey_option, parent, false);
-
-            return new RandomSurveyViewHolder(itemView);
+        if (accessToken == null || accessToken.isEmpty()) {
+            Toast.makeText(requireContext(), "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        @Override
-        public void onBindViewHolder(@NonNull RandomSurveyViewHolder holder, int position) {
-            holder.questionText.setText("Q. " + questions[position]);
+        Log.d(TAG_HOME_SURVEY_DEBUG, "loadSurveys request from FragmentHome");
+        surveyViewModel.loadSurveys(accessToken);
+    }
 
-            holder.ratingGroup.setOnCheckedChangeListener(null);
-            holder.ratingGroup.clearCheck();
+    private void renderHomeSurveys(List<SurveyResponse> surveys) {
+        if (surveys == null || surveys.isEmpty()) {
+            randomSurvey = null;
 
-            if (answers[position] != -1) {
-                holder.ratingGroup.check(getRadioButtonIdByAnswer(answers[position]));
+            randomSurveyButton.setText("진행 가능한 랜덤 설문이 없습니다.");
+
+            if (selectSurveyList != null) {
+                selectSurveyList.removeAllViews();
+                selectSurveyList.addView(createEmptyView("추천 설문이 없습니다."));
             }
 
-            holder.ratingGroup.setOnCheckedChangeListener((group, checkedId) -> {
-                int answer = getAnswerByRadioButtonId(checkedId);
-                answers[position] = answer;
-
-                // 선택 후 다음 슬라이드로 자동 이동
-                if (position < questions.length - 1) {
-                    randomSurveySlideView.postDelayed(() -> {
-                        randomSurveySlideView.setCurrentItem(position + 1, true);
-                    }, 300);
-                } else {
-                    checkRandomSurveyFinished();
-                }
-            });
+            return;
         }
 
-        @Override
-        public int getItemCount() {
-            return questions.length;
-        }
+        List<SurveyResponse> validSurveys = new ArrayList<>();
 
-        private class RandomSurveyViewHolder extends RecyclerView.ViewHolder {
-
-            TextView questionText;
-            RadioGroup ratingGroup;
-
-            public RandomSurveyViewHolder(@NonNull View itemView) {
-                super(itemView);
-
-                questionText = itemView.findViewById(R.id.questionText);
-                ratingGroup = itemView.findViewById(R.id.ratingGroup);
+        for (SurveyResponse survey : surveys) {
+            if (survey != null && survey.getId() != null) {
+                validSurveys.add(survey);
             }
         }
+
+        if (validSurveys.isEmpty()) {
+            randomSurvey = null;
+            randomSurveyButton.setText("진행 가능한 랜덤 설문이 없습니다.");
+
+            if (selectSurveyList != null) {
+                selectSurveyList.removeAllViews();
+                selectSurveyList.addView(createEmptyView("추천 설문이 없습니다."));
+            }
+
+            return;
+        }
+
+        Log.d(TAG_HOME_SURVEY_DEBUG,
+                "UI success state: home surveys rendered count=" + validSurveys.size());
+
+        setRandomSurvey(validSurveys);
+        renderRecommendedSurveys(validSurveys);
     }
 
-    private int getRadioButtonIdByAnswer(int answer) {
-        if (answer == 1) return R.id.rating1;
-        if (answer == 2) return R.id.rating2;
-        if (answer == 3) return R.id.rating3;
-        if (answer == 4) return R.id.rating4;
-        if (answer == 5) return R.id.rating5;
+    private void setRandomSurvey(List<SurveyResponse> surveys) {
+        int randomIndex = new Random().nextInt(surveys.size());
+        randomSurvey = surveys.get(randomIndex);
 
-        return -1;
+        String title = valueOrDefault(randomSurvey.getTitle(), "랜덤 설문");
+        String category = valueOrDefault(randomSurvey.getCategoryName(), "카테고리 없음");
+        String reward = formatReward(randomSurvey.getReward());
+
+        randomSurveyButton.setText(
+                title +
+                        "\n" +
+                        category +
+                        " · " +
+                        reward
+        );
+
+        if (questionLayout != null) {
+            questionLayout.setVisibility(View.GONE);
+        }
     }
 
-    private int getAnswerByRadioButtonId(int checkedId) {
-        if (checkedId == R.id.rating1) return 1;
-        if (checkedId == R.id.rating2) return 2;
-        if (checkedId == R.id.rating3) return 3;
-        if (checkedId == R.id.rating4) return 4;
-        if (checkedId == R.id.rating5) return 5;
+    private void renderRecommendedSurveys(List<SurveyResponse> surveys) {
+        if (selectSurveyList == null) {
+            Log.e(TAG_HOME_SURVEY_DEBUG,
+                    "recommendedSurveyListLayout is null. Check fragment_home.xml id.");
+            return;
+        }
 
-        return -1;
+        selectSurveyList.removeAllViews();
+
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+
+        int maxCount = Math.min(surveys.size(), 5);
+
+        for (int i = 0; i < maxCount; i++) {
+            SurveyResponse survey = surveys.get(i);
+
+            View surveyCard = inflater.inflate(
+                    R.layout.item_survey_card,
+                    selectSurveyList,
+                    false
+            );
+
+            TextView titleText = surveyCard.findViewById(R.id.surveyTitleText);
+            TextView pointText = surveyCard.findViewById(R.id.surveyPointText);
+            LinearLayout tagLayout = surveyCard.findViewById(R.id.surveyTagLayout);
+            FrameLayout itemSurveyCard = surveyCard.findViewById(R.id.itemSurveyCard);
+
+            titleText.setText(valueOrDefault(survey.getTitle(), "제목 없음"));
+            pointText.setText(formatReward(survey.getReward()));
+
+            tagLayout.removeAllViews();
+
+            String categoryName = survey.getCategoryName();
+
+            if (categoryName == null || categoryName.trim().isEmpty()) {
+                tagLayout.addView(createTagTextView(tagLayout, "카테고리 없음"));
+            } else {
+                tagLayout.addView(createTagTextView(tagLayout, categoryName));
+            }
+
+            itemSurveyCard.setOnClickListener(v -> showSurveyDialog(survey));
+
+            LinearLayout.LayoutParams cardParams =
+                    new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            dp(92)
+                    );
+
+            if (i != 0) {
+                cardParams.topMargin = dp(12);
+            }
+
+            surveyCard.setLayoutParams(cardParams);
+            selectSurveyList.addView(surveyCard);
+        }
+    }
+
+    private TextView createTagTextView(LinearLayout parent, String tag) {
+        TextView tagText = (TextView) LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_survey_tag, parent, false);
+
+        tagText.setText(tag);
+
+        return tagText;
+    }
+
+    private TextView createEmptyView(String message) {
+        TextView empty = new TextView(requireContext());
+
+        empty.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+
+        empty.setPadding(0, dp(20), 0, dp(20));
+        empty.setText(message);
+        empty.setTextColor(0xFF777777);
+        empty.setTextSize(14f);
+
+        return empty;
+    }
+
+    private void showSurveyDialog(SurveyResponse survey) {
+        String title = valueOrDefault(survey.getTitle(), "설문");
+        String description = valueOrDefault(survey.getDescription(), "설명 없음");
+        String rewardText = "+" + (survey.getReward() != null ? survey.getReward() : 0) + "P 적립";
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("설문 정보")
+                .setMessage(
+                        title +
+                                "\n\n" +
+                                description +
+                                "\n\n소요 시간 : 약 1~2분\n" +
+                                rewardText
+                )
+                .setNegativeButton("취소", null)
+                .setPositiveButton("시작하기", (dialog, which) -> {
+                    Intent intent = new Intent(requireContext(), SurveyActivity.class);
+                    intent.putExtra(EXTRA_SURVEY_ID, survey.getId());
+                    startActivity(intent);
+                })
+                .show();
+    }
+
+    private String formatReward(Integer reward) {
+        if (reward == null) {
+            return "0 points ✨";
+        }
+
+        return reward + " points ✨";
+    }
+
+    private String valueOrDefault(String value, String fallback) {
+        if (value == null || value.trim().isEmpty()) {
+            return fallback;
+        }
+
+        return value;
     }
 
     //region ### 화면 크기 자동 조절 함수 ###
@@ -229,17 +300,19 @@ public class FragmentHome extends Fragment {
         View sectionDivider = root.findViewById(R.id.sectionDivider);
         FrameLayout randomSurveyBox = root.findViewById(R.id.randomSurveyBox);
 
-        contentArea.post(() -> {
+        if (contentArea == null ||
+                randomHeader == null ||
+                selectHeader == null ||
+                sectionDivider == null ||
+                randomSurveyBox == null) {
+            return;
+        }
 
-            // randomSurveyBox의 가로는 항상 match_parent 기준
+        contentArea.post(() -> {
             int parentWidth = contentArea.getWidth();
 
-            // 기본 비율: 16:9
-            // height = width * 9 / 16
             int desiredRandomBoxHeight = parentWidth * 3 / 4;
 
-            // 아래 ScrollView 안에 최소 설문 카드 1개가 보이도록 확보할 높이
-            // 카드 높이 92dp + 여유 공간
             int minScrollAreaHeight = dp(80);
 
             int fixedHeight =
@@ -248,18 +321,15 @@ public class FragmentHome extends Fragment {
                             + sectionDivider.getHeight()
                             + getVerticalMargins(sectionDivider)
                             + selectHeader.getHeight()
-                            + dp(12) // ScrollView marginTop
+                            + dp(12)
                             + minScrollAreaHeight;
 
             int maxRandomBoxHeight = contentArea.getHeight() - fixedHeight;
 
-            // 너무 작아지는 것 방지
             if (maxRandomBoxHeight < dp(80)) {
                 maxRandomBoxHeight = dp(80);
             }
 
-            // 기본은 16:9 높이,
-            // 하지만 아래 선택 설문 카드 1개가 안 들어가면 높이만 줄임
             int finalHeight = Math.min(desiredRandomBoxHeight, maxRandomBoxHeight);
 
             LinearLayout.LayoutParams params =
@@ -289,5 +359,4 @@ public class FragmentHome extends Fragment {
         return (int) (value * getResources().getDisplayMetrics().density + 0.5f);
     }
     //endregion
-
 }
