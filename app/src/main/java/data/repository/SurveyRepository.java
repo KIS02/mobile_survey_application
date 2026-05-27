@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import data.network.RetrofitClient;
 import model.AnswerSubmitRequest;
 import model.ApiResponse;
-import model.SurveySubmitResponse;
+import model.ReliabilityResponse;
 import model.SurveyDetailResponse;
 import model.SurveyResponse;
 import retrofit2.Call;
@@ -34,7 +34,7 @@ public class SurveyRepository {
     }
 
     public interface SubmitCallback {
-        void onSuccess(SurveySubmitResponse response);
+        void onSuccess(ReliabilityResponse response);
         void onFailure(String errorMessage);
     }
 
@@ -203,16 +203,18 @@ public class SurveyRepository {
 
         RetrofitClient.getSurveyApiService()
                 .submitResponses("Bearer " + accessToken, surveyId, request)
-                .enqueue(new Callback<ApiResponse<SurveySubmitResponse>>() {
+                .enqueue(new Callback<ApiResponse<ReliabilityResponse>>() {
                     @Override
-                    public void onResponse(Call<ApiResponse<SurveySubmitResponse>> call,
-                                           Response<ApiResponse<SurveySubmitResponse>> response) {
+                    public void onResponse(Call<ApiResponse<ReliabilityResponse>> call,
+                                           Response<ApiResponse<ReliabilityResponse>> response) {
                         if (response.isSuccessful()
                                 && response.body() != null
                                 && response.body().getData() != null) {
+                            ReliabilityResponse submitResponse = response.body().getData();
                             Log.d(TAG_SURVEY_DEBUG,
-                                    "submitResponses success code=" + response.code());
-                            callback.onSuccess(response.body().getData());
+                                    "submitResponses success code=" + response.code()
+                                            + ", earnedCredit=" + submitResponse.getEarnedCredit());
+                            callback.onSuccess(submitResponse);
                         } else {
                             String errorBody = readErrorBody(response);
                             Log.e(TAG_SURVEY_DEBUG,
@@ -223,7 +225,7 @@ public class SurveyRepository {
                     }
 
                     @Override
-                    public void onFailure(Call<ApiResponse<SurveySubmitResponse>> call, Throwable t) {
+                    public void onFailure(Call<ApiResponse<ReliabilityResponse>> call, Throwable t) {
                         Log.e(TAG_SURVEY_DEBUG, "submitResponses network error=" + t.getMessage(), t);
                         callback.onFailure("네트워크 오류: " + t.getMessage());
                     }

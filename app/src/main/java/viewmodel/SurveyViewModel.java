@@ -13,7 +13,7 @@ import java.util.Map;
 
 import data.repository.SurveyRepository;
 import model.AnswerSubmitRequest;
-import model.SurveySubmitResponse;
+import model.ReliabilityResponse;
 import model.SurveyDetailResponse;
 import model.SurveyQuestionResponse;
 import model.SurveyResponse;
@@ -28,6 +28,7 @@ public class SurveyViewModel extends ViewModel {
     private final MutableLiveData<String> surveyListError = new MutableLiveData<>();
     private final MutableLiveData<SurveyDetailResponse> surveyDetail = new MutableLiveData<>();
     private final MutableLiveData<Boolean> submitSuccess = new MutableLiveData<>(false);
+    private final MutableLiveData<Integer> submitEarnedCredit = new MutableLiveData<>();
     private final MutableLiveData<Boolean> submitDenied = new MutableLiveData<>(false);
     private final MutableLiveData<String> submitErrorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
@@ -49,6 +50,10 @@ public class SurveyViewModel extends ViewModel {
 
     public LiveData<Boolean> getSubmitSuccess() {
         return submitSuccess;
+    }
+
+    public LiveData<Integer> getSubmitEarnedCredit() {
+        return submitEarnedCredit;
     }
 
     public LiveData<Boolean> getSubmitDenied() {
@@ -163,7 +168,11 @@ public class SurveyViewModel extends ViewModel {
 
         surveyRepository.submitSurvey(accessToken, currentSurveyId, request, new SurveyRepository.SubmitCallback() {
             @Override
-            public void onSuccess(SurveySubmitResponse response) {
+            public void onSuccess(ReliabilityResponse response) {
+                Integer earnedCredit = response == null ? null : response.getEarnedCredit();
+                Log.d(TAG_SURVEY_DEBUG,
+                        "submitSurvey success earnedCredit=" + earnedCredit);
+                submitEarnedCredit.postValue(earnedCredit);
                 submitSuccess.postValue(true);
             }
 
@@ -176,6 +185,7 @@ public class SurveyViewModel extends ViewModel {
 
     public void doneSubmitSuccess() {
         submitSuccess.setValue(false);
+        submitEarnedCredit.setValue(null);
     }
 
     public void doneSubmitDenied() {

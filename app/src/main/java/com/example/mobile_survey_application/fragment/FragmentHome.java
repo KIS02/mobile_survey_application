@@ -42,8 +42,8 @@ public class FragmentHome extends Fragment {
 
 
     // 테스트용 설문조사 전용
-    private static final boolean USE_MOCK_SURVEY = true;
-    private static final boolean USE_MOCK_INTERNAL_SURVEY = true;
+    private static final boolean USE_MOCK_SURVEY = false;
+    private static final boolean USE_MOCK_INTERNAL_SURVEY = false;
 
     private TextView randomSurveyButton;
     private LinearLayout questionLayout;

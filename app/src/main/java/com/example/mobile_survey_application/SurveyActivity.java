@@ -35,6 +35,7 @@ public class SurveyActivity extends AppCompatActivity {
 
     private SurveyViewModel surveyViewModel;
     private Long intentSurveyId;
+    private Integer latestEarnedCredit;
     private LinearLayout questionContainer;
     private TokenManager tokenManager;
 
@@ -79,9 +80,13 @@ public class SurveyActivity extends AppCompatActivity {
 
         surveyViewModel.getSubmitSuccess().observe(this, success -> {
             if (Boolean.TRUE.equals(success)) {
-                showConfirmDialog();
+                showConfirmDialog(latestEarnedCredit);
                 surveyViewModel.doneSubmitSuccess();
             }
+        });
+
+        surveyViewModel.getSubmitEarnedCredit().observe(this, earnedCredit -> {
+            latestEarnedCredit = earnedCredit;
         });
 
         surveyViewModel.getSubmitDenied().observe(this, denied -> {
@@ -191,10 +196,14 @@ public class SurveyActivity extends AppCompatActivity {
     }
     //endregion
 
-    private void showConfirmDialog() {
+    private void showConfirmDialog(Integer earnedCredit) {
+        String successMessage = earnedCredit != null
+                ? earnedCredit + "p가 지급되었습니다."
+                : "제출 후에는 답변을 수정할 수 없습니다.";
+
         new AlertDialog.Builder(this)
                 .setTitle("설문을 완료할까요?")
-                .setMessage("제출 후에는 답변을 수정할 수 없습니다.")
+                .setMessage(successMessage)
                 .setNegativeButton("취소", null)
                 .setPositiveButton("제출", (dialog, which) -> {
                     showSubmitSuccessToast();
