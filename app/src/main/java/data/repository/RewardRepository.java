@@ -8,6 +8,7 @@ import java.util.List;
 import data.network.RetrofitClient;
 import model.ApiResponse;
 import model.CouponResponse;
+import model.CreditHistoryResponse;
 import model.ExchangeRequest;
 import model.RewardResponse;
 import retrofit2.Call;
@@ -25,6 +26,11 @@ public class RewardRepository {
 
     public interface ExchangeCallback {
         void onSuccess(CouponResponse coupon);
+        void onFailure(String errorMessage);
+    }
+
+    public interface CreditHistoryCallback {
+        void onSuccess(List<CreditHistoryResponse> histories);
         void onFailure(String errorMessage);
     }
 
@@ -78,6 +84,38 @@ public class RewardRepository {
                     @Override
                     public void onFailure(Call<ApiResponse<CouponResponse>> call, Throwable t) {
                         Log.e(TAG_REWARD_DEBUG, "exchange network error=" + t.getMessage(), t);
+                        callback.onFailure("네트워크 오류: " + t.getMessage());
+                    }
+                });
+    }
+
+    public void getCreditHistory(String accessToken, CreditHistoryCallback callback) {
+        Log.d(TAG_REWARD_DEBUG, "loadCreditHistory request");
+        RetrofitClient.getUserApiService()
+                .getCreditHistory("Bearer " + accessToken)
+                .enqueue(new Callback<ApiResponse<List<CreditHistoryResponse>>>() {
+                    @Override
+                    public void onResponse(Call<ApiResponse<List<CreditHistoryResponse>>> call,
+                                           Response<ApiResponse<List<CreditHistoryResponse>>> response) {
+                        if (response.isSuccessful()
+                                && response.body() != null
+                                && response.body().getData() != null) {
+                            List<CreditHistoryResponse> histories = response.body().getData();
+                            Log.d(TAG_REWARD_DEBUG,
+                                    "loadCreditHistory success count=" + histories.size());
+                            callback.onSuccess(histories);
+                        } else {
+                            String errorBody = readErrorBody(response);
+                            Log.e(TAG_REWARD_DEBUG,
+                                    "loadCreditHistory failed code=" + response.code()
+                                            + ", errorBody=" + errorBody);
+                            callback.onFailure("포인트 내역 조회 실패: " + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ApiResponse<List<CreditHistoryResponse>>> call, Throwable t) {
+                        Log.e(TAG_REWARD_DEBUG, "loadCreditHistory network error=" + t.getMessage(), t);
                         callback.onFailure("네트워크 오류: " + t.getMessage());
                     }
                 });

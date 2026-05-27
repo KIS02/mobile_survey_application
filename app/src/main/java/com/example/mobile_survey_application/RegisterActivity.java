@@ -98,9 +98,12 @@ public class RegisterActivity extends AppCompatActivity {
         authViewModel.getRegisterResult().observe(this, response -> {
             Toast.makeText(this, "회원가입 완료! 홈으로 이동합니다.", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(this, MainActivity.class);
+            Log.d("REGISTER_DEBUG", "register success navigate HomeActivity");
+            Log.d("REGISTER_DEBUG", "register success clear auth stack");
+            Intent intent = new Intent(RegisterActivity.this, HomeActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+            finish();
         });
 
         authViewModel.getErrorMessage().observe(this, message ->

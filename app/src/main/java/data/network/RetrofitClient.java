@@ -51,4 +51,9 @@ public class RetrofitClient {
     public static UserApiService getUserApiService() {
         return getInstance().create(UserApiService.class);
     }
+
+    // [추가] 설문 API (GET /api/surveys/random, POST /api/surveys/{surveyId}/responses)
+    public static SurveyApiService getSurveyApiService() {
+        return getInstance().create(SurveyApiService.class);
+    }
 }

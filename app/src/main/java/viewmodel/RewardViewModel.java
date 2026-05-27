@@ -10,6 +10,7 @@ import java.util.List;
 
 import data.repository.RewardRepository;
 import model.CouponResponse;
+import model.CreditHistoryResponse;
 import model.RewardResponse;
 
 public class RewardViewModel extends ViewModel {
@@ -17,12 +18,14 @@ public class RewardViewModel extends ViewModel {
     private final RewardRepository rewardRepository = new RewardRepository();
 
     private final MutableLiveData<List<RewardResponse>> rewards = new MutableLiveData<>();
+    private final MutableLiveData<List<CreditHistoryResponse>> creditHistories = new MutableLiveData<>();
     private final MutableLiveData<CouponResponse> exchangeResult = new MutableLiveData<>();
     private final MutableLiveData<String> exchangeErrorMessage = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
     public LiveData<List<RewardResponse>> getRewards() { return rewards; }
+    public LiveData<List<CreditHistoryResponse>> getCreditHistories() { return creditHistories; }
     public LiveData<CouponResponse> getExchangeResult() { return exchangeResult; }
     public LiveData<String> getExchangeErrorMessage() { return exchangeErrorMessage; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
@@ -58,6 +61,23 @@ public class RewardViewModel extends ViewModel {
             public void onFailure(String message) {
                 isLoading.postValue(false);
                 exchangeErrorMessage.postValue(message);
+            }
+        });
+    }
+
+    public void loadCreditHistory(String accessToken) {
+        isLoading.setValue(true);
+        rewardRepository.getCreditHistory(accessToken, new RewardRepository.CreditHistoryCallback() {
+            @Override
+            public void onSuccess(List<CreditHistoryResponse> histories) {
+                isLoading.postValue(false);
+                creditHistories.postValue(histories);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                isLoading.postValue(false);
+                errorMessage.postValue(message);
             }
         });
     }
