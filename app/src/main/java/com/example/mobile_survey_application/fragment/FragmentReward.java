@@ -22,6 +22,7 @@ public class FragmentReward extends Fragment {
     private TextView tvCurrentCredit;
     // [추가] GET /api/user/me 호출을 위한 ViewModel
     private UserViewModel userViewModel;
+    private TokenManager tokenManager;
 
     public FragmentReward() {}
 
@@ -61,6 +62,7 @@ public class FragmentReward extends Fragment {
 
         // [추가] UserViewModel으로 GET /api/user/me 호출
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        tokenManager = new TokenManager(requireContext());
 
         userViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
             if (user != null && user.getCredit() != null) {
@@ -73,8 +75,19 @@ public class FragmentReward extends Fragment {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         );
 
-        // [추가] TokenManager에서 저장된 JWT 꺼내 API 호출
-        String token = new TokenManager(requireContext()).getAccessToken();
+        loadMyCredit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (userViewModel != null && tvCurrentCredit != null) {
+            loadMyCredit();
+        }
+    }
+
+    private void loadMyCredit() {
+        String token = tokenManager.getAccessToken();
         if (token != null) {
             userViewModel.loadMe(token);
         } else {
