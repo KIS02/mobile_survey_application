@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-// [추가] GET /api/user/me 응답 모델
+// [추가] GET /api/users/me 응답 모델
 public class UserResponse {
     private Long id;
     private String name;
