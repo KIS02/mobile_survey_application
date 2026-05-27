@@ -16,6 +16,7 @@ import model.AnswerSubmitRequest;
 import model.ReliabilityResponse;
 import model.SurveyDetailResponse;
 import model.SurveyQuestionResponse;
+import model.SurveyResponse;
 
 public class SurveyViewModel extends ViewModel {
 
@@ -23,6 +24,8 @@ public class SurveyViewModel extends ViewModel {
 
     private final SurveyRepository surveyRepository = new SurveyRepository();
 
+    private final MutableLiveData<List<SurveyResponse>> surveyList = new MutableLiveData<>();
+    private final MutableLiveData<String> surveyListError = new MutableLiveData<>();
     private final MutableLiveData<SurveyDetailResponse> surveyDetail = new MutableLiveData<>();
     private final MutableLiveData<Boolean> submitSuccess = new MutableLiveData<>(false);
     private final MutableLiveData<Boolean> submitDenied = new MutableLiveData<>(false);
@@ -31,6 +34,14 @@ public class SurveyViewModel extends ViewModel {
 
     private Long currentSurveyId;
     private final Map<Long, Long> selectedOptionByContentId = new HashMap<>();
+
+    public LiveData<List<SurveyResponse>> getSurveyList() {
+        return surveyList;
+    }
+
+    public LiveData<String> getSurveyListError() {
+        return surveyListError;
+    }
 
     public LiveData<SurveyDetailResponse> getSurveyDetail() {
         return surveyDetail;
@@ -50,6 +61,42 @@ public class SurveyViewModel extends ViewModel {
 
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
+    }
+
+    public void loadSurveys(String accessToken) {
+        isLoading.setValue(true);
+        surveyRepository.getSurveys(accessToken, new SurveyRepository.SurveyListCallback() {
+            @Override
+            public void onSuccess(List<SurveyResponse> surveys) {
+                isLoading.postValue(false);
+                surveyList.postValue(surveys);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                isLoading.postValue(false);
+                surveyListError.postValue(errorMessage);
+            }
+        });
+    }
+
+    public void loadSurveyById(String accessToken, Long surveyId) {
+        isLoading.setValue(true);
+        surveyRepository.getSurveyById(accessToken, surveyId, new SurveyRepository.SurveyCallback() {
+            @Override
+            public void onSuccess(SurveyDetailResponse detail) {
+                isLoading.postValue(false);
+                currentSurveyId = detail.getId();
+                selectedOptionByContentId.clear();
+                surveyDetail.postValue(detail);
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                isLoading.postValue(false);
+                submitErrorMessage.postValue(errorMessage);
+            }
+        });
     }
 
     public void loadRandomSurvey(String accessToken) {

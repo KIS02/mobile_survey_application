@@ -6,6 +6,7 @@ import model.AnswerSubmitRequest;
 import model.ApiResponse;
 import model.ReliabilityResponse;
 import model.SurveyDetailResponse;
+import model.SurveyResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -14,6 +15,11 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface SurveyApiService {
+
+    @GET("api/surveys")
+    Call<ApiResponse<List<SurveyResponse>>> getSurveys(
+            @Header("Authorization") String bearerToken
+    );
 
     @GET("api/surveys/random")
     Call<ApiResponse<SurveyDetailResponse>> getRandomSurvey(

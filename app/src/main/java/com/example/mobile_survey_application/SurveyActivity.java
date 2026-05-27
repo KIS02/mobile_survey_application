@@ -20,6 +20,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.List;
 
+import com.example.mobile_survey_application.fragment.FragmentSurvey;
+
 import data.local.TokenManager;
 import model.SurveyDetailResponse;
 import model.SurveyOptionResponse;
@@ -29,8 +31,10 @@ import viewmodel.SurveyViewModel;
 
 public class SurveyActivity extends AppCompatActivity {
     private static final String TAG_SURVEY_DEBUG = "SURVEY_DEBUG";
+    private static final String TAG_SURVEY_LIST_DEBUG = "SURVEY_LIST_DEBUG";
 
     private SurveyViewModel surveyViewModel;
+    private Long intentSurveyId;
     private LinearLayout questionContainer;
     private TokenManager tokenManager;
 
@@ -47,6 +51,14 @@ public class SurveyActivity extends AppCompatActivity {
 
         tokenManager = new TokenManager(this);
         surveyViewModel = new ViewModelProvider(this).get(SurveyViewModel.class);
+
+        if (getIntent() != null && getIntent().hasExtra(FragmentSurvey.EXTRA_SURVEY_ID)) {
+            intentSurveyId = getIntent().getLongExtra(FragmentSurvey.EXTRA_SURVEY_ID, -1L);
+            if (intentSurveyId != null && intentSurveyId < 0) {
+                intentSurveyId = null;
+            }
+        }
+        Log.d(TAG_SURVEY_LIST_DEBUG, "intent surveyId=" + intentSurveyId);
 
         observeViewModel();
 
@@ -93,7 +105,14 @@ public class SurveyActivity extends AppCompatActivity {
             return;
         }
 
-        surveyViewModel.loadRandomSurvey(token);
+        if (intentSurveyId != null) {
+            Log.d(TAG_SURVEY_LIST_DEBUG,
+                    "loadSurveyById request surveyId=" + intentSurveyId);
+            surveyViewModel.loadSurveyById(token, intentSurveyId);
+        } else {
+            Log.d(TAG_SURVEY_LIST_DEBUG, "loadRandomSurvey request (no surveyId in intent)");
+            surveyViewModel.loadRandomSurvey(token);
+        }
     }
 
     private void renderSurvey(SurveyDetailResponse detail) {
