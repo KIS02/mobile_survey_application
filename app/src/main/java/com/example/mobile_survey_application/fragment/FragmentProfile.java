@@ -8,9 +8,11 @@ import androidx.lifecycle.ViewModelProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mobile_survey_application.R;
+import com.example.mobile_survey_application.util.ProfileImageHelper;
 
 import model.UserResponse;
 import viewmodel.AuthViewModel;
@@ -20,6 +22,7 @@ public class FragmentProfile extends Fragment {
     private AuthViewModel authViewModel;
     private TextView txtProfileName;
     private TextView txtProfileEmail;
+    private ImageView imgProfile;
 
     public FragmentProfile() {
         // Required empty public constructor
@@ -43,6 +46,7 @@ public class FragmentProfile extends Fragment {
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         txtProfileName = view.findViewById(R.id.txtProfileName);
         txtProfileEmail = view.findViewById(R.id.txtProfileEmail);
+        imgProfile = view.findViewById(R.id.imgProfile);
 
         authViewModel.getMyProfile().observe(getViewLifecycleOwner(), this::bindProfile);
         authViewModel.loadMyProfile();
@@ -81,6 +85,7 @@ public class FragmentProfile extends Fragment {
 
         txtProfileName.setText(valueOrDefault(user.getName(), "사용자"));
         txtProfileEmail.setText(valueOrDefault(user.getEmail(), "이메일 정보 없음"));
+        ProfileImageHelper.loadProfileImage(this, imgProfile, user);
     }
 
     private String valueOrDefault(String value, String fallback) {

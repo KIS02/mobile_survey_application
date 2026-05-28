@@ -49,6 +49,7 @@ public class FragmentSetting extends Fragment {
                 .setNegativeButton("취소", null)
                 .setPositiveButton("로그아웃", (dialog, which) -> {
                     Intent intent = new Intent(requireContext(), LogoutActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 })
                 .show();

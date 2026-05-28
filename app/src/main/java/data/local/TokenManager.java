@@ -8,6 +8,7 @@ public class TokenManager {
     private static final String PREF_NAME = "auth_prefs";
     private static final String KEY_ACCESS_TOKEN = "access_token";
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
+    private static final String KEY_GOOGLE_PROFILE_PICTURE_URL = "google_profile_picture_url";
 
     private final SharedPreferences prefs;
 
@@ -32,6 +33,16 @@ public class TokenManager {
 
     public boolean hasToken() {
         return getAccessToken() != null;
+    }
+
+    public void saveGoogleProfilePictureUrl(String pictureUrl) {
+        prefs.edit()
+                .putString(KEY_GOOGLE_PROFILE_PICTURE_URL, pictureUrl)
+                .apply();
+    }
+
+    public String getGoogleProfilePictureUrl() {
+        return prefs.getString(KEY_GOOGLE_PROFILE_PICTURE_URL, null);
     }
 
     public void clearTokens() {

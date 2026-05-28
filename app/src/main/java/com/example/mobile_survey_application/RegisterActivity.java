@@ -2,6 +2,9 @@ package com.example.mobile_survey_application;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +20,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.mobile_survey_application.fragment.FragmentCategoryChange;
+import com.example.mobile_survey_application.util.BirthDateTextWatcher;
+import com.example.mobile_survey_application.util.PhoneNumberTextWatcher;
+import com.example.mobile_survey_application.util.RegisterInputValidator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +77,13 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (prefillName != null) {
             etName.setText(prefillName);
+        }
+
+        setupInputValidation();
+
+        if (!hasValidTempToken()) {
+            redirectToLoginExpired();
+            return;
         }
 
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
@@ -198,7 +211,100 @@ public class RegisterActivity extends AppCompatActivity {
         return "알 수 없음";
     }
 
+    private void setupInputValidation() {
+        etName.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(20),
+                RegisterInputValidator.nameInputFilter()
+        });
+        etNickname.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(12),
+                RegisterInputValidator.nicknameInputFilter()
+        });
+        etTelephone.addTextChangedListener(new PhoneNumberTextWatcher(etTelephone));
+        etBirthDate.addTextChangedListener(new BirthDateTextWatcher(etBirthDate));
+        clearErrorOnChange(etName);
+        clearErrorOnChange(etTelephone);
+        clearErrorOnChange(etNickname);
+        clearErrorOnChange(etBirthDate);
+        clearErrorOnChange(etRegion);
+        clearErrorOnChange(etOccupation);
+    }
+
+    private void clearErrorOnChange(EditText editText) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                editText.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    private boolean hasValidTempToken() {
+        return tempToken != null && !tempToken.isEmpty();
+    }
+
+    private void redirectToLoginExpired() {
+        Toast.makeText(this, "로그인 세션이 만료되었습니다. 다시 로그인해주세요.", Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, LoginTestActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void clearFieldErrors() {
+        etName.setError(null);
+        etTelephone.setError(null);
+        etNickname.setError(null);
+        etBirthDate.setError(null);
+        etRegion.setError(null);
+        etOccupation.setError(null);
+    }
+
+    private boolean showFieldError(EditText editText, String message) {
+        editText.setError(message);
+        editText.requestFocus();
+        return false;
+    }
+
+    private EditText findFirstEmptyField(String name, String telephone, String nickname,
+                                         String birthDate, String location, String occupation) {
+        if (name.isEmpty()) {
+            return etName;
+        }
+        if (telephone.isEmpty()) {
+            return etTelephone;
+        }
+        if (nickname.isEmpty()) {
+            return etNickname;
+        }
+        if (birthDate.isEmpty()) {
+            return etBirthDate;
+        }
+        if (location.isEmpty()) {
+            return etRegion;
+        }
+        if (occupation.isEmpty()) {
+            return etOccupation;
+        }
+        return null;
+    }
+
     private void submitRegister() {
+        if (!hasValidTempToken()) {
+            redirectToLoginExpired();
+            return;
+        }
+
+        clearFieldErrors();
+
         String name = etName.getText().toString().trim();
         String telephone = etTelephone.getText().toString().trim();
         String nickname = etNickname.getText().toString().trim();
@@ -207,9 +313,34 @@ public class RegisterActivity extends AppCompatActivity {
         String region = location;
         String occupation = etOccupation.getText().toString().trim();
 
-        if (name.isEmpty() || telephone.isEmpty() || nickname.isEmpty()
-                || birthDate.isEmpty() || location.isEmpty() || occupation.isEmpty()) {
-            Toast.makeText(this, "모든 항목을 입력해주세요.", Toast.LENGTH_SHORT).show();
+        EditText firstEmpty = findFirstEmptyField(
+                name, telephone, nickname, birthDate, location, occupation);
+        if (firstEmpty != null) {
+            showFieldError(firstEmpty, "입력해주세요.");
+            return;
+        }
+
+        String nameError = RegisterInputValidator.validateName(name);
+        if (nameError != null) {
+            showFieldError(etName, nameError);
+            return;
+        }
+
+        String telephoneError = RegisterInputValidator.validateTelephone(telephone);
+        if (telephoneError != null) {
+            showFieldError(etTelephone, telephoneError);
+            return;
+        }
+
+        String nicknameError = RegisterInputValidator.validateNickname(nickname);
+        if (nicknameError != null) {
+            showFieldError(etNickname, nicknameError);
+            return;
+        }
+
+        String birthDateError = RegisterInputValidator.validateBirthDate(birthDate);
+        if (birthDateError != null) {
+            showFieldError(etBirthDate, birthDateError);
             return;
         }
 

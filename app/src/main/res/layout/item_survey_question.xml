@@ -6,12 +6,12 @@
     android:minHeight="125dp"
     android:orientation="vertical"
     android:background="@drawable/survey_box"
-    android:layout_marginBottom="18dp"
+    android:layout_marginBottom="14dp"
     android:paddingStart="14dp"
     android:paddingTop="14dp"
     android:paddingEnd="14dp"
     android:paddingBottom="14dp"
-    android:layout_marginTop="18dp">
+    android:layout_marginTop="14dp">
 
     <TextView
         android:id="@+id/tv_question_title"

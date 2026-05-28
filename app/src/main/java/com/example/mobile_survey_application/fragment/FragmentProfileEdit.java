@@ -1,6 +1,5 @@
 package com.example.mobile_survey_application.fragment;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,9 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.lifecycle.ViewModelProvider;
+import com.example.mobile_survey_application.util.ProfileImageHelper;
 import model.CategoryResponse;
 import model.UserResponse;
 import model.UserUpdateRequest;
@@ -28,6 +29,7 @@ public class FragmentProfileEdit extends Fragment {
     private static final String TAG_PROFILE_DEBUG = "PROFILE_DEBUG";
 
     private AuthViewModel authViewModel;
+    private ImageView imgProfile;
     private TextView txtCategory;
     private EditText etName;
     private EditText etTelephone;
@@ -48,6 +50,7 @@ public class FragmentProfileEdit extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile_edit, container, false);
 
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
+        imgProfile = view.findViewById(R.id.imgProfile);
         etName = view.findViewById(R.id.etProfileName);
         etTelephone = view.findViewById(R.id.etProfileTelephone);
         etNickname = view.findViewById(R.id.etProfileNickname);
@@ -62,11 +65,6 @@ public class FragmentProfileEdit extends Fragment {
 
         view.findViewById(R.id.btnBack).setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
-        });
-
-        view.findViewById(R.id.profileImageArea).setOnClickListener(v -> {
-            Log.d("ProfileEdit", "프로필 이미지 클릭됨");
-            showProfileImageDialog();
         });
 
         view.findViewById(R.id.btnCategory).setOnClickListener(v -> {
@@ -145,6 +143,7 @@ public class FragmentProfileEdit extends Fragment {
         setText(etBirthDate, user.getBirthDate());
         setText(etLocation, user.getLocation());
         setText(etRegion, user.getRegion());
+        ProfileImageHelper.loadProfileImage(this, imgProfile, user);
     }
 
     private void updateCategoryText() {
@@ -186,13 +185,5 @@ public class FragmentProfileEdit extends Fragment {
 
     private String valueOrEmpty(String value) {
         return value.isEmpty() ? "(empty)" : value;
-    }
-
-    private void showProfileImageDialog() {
-        new AlertDialog.Builder(requireContext())
-                .setTitle("프로필 이미지 수정")
-                .setMessage("프로필 이미지를 변경하는 기능입니다.")
-                .setPositiveButton("확인", null)
-                .show();
     }
 }

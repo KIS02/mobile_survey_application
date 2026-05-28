@@ -30,6 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="이름"
+                android:maxLength="20"
                 android:layout_marginBottom="16dp" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -38,8 +39,9 @@
                 android:id="@+id/et_telephone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="010-0000-0000"
-                android:inputType="phone"
+                android:hint="01012345678"
+                android:inputType="number"
+                android:maxLength="13"
                 android:layout_marginBottom="16dp" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -49,6 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="닉네임"
+                android:maxLength="12"
                 android:layout_marginBottom="16dp" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -73,7 +76,9 @@
                 android:id="@+id/et_birth_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="YYYY-MM-DD"
+                android:hint="20010505"
+                android:inputType="number"
+                android:maxLength="10"
                 android:layout_marginBottom="16dp" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -95,7 +100,7 @@
                 android:layout_marginBottom="24dp" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="관심 카테고리 (최대 5개, 선택 순서 = 선호도 순위)"
+                android:text="관심 카테고리 (3개 선택, 선택 순서 = 선호도 순위)"
                 android:textStyle="bold" android:layout_marginBottom="8dp"/>
                     <!-- Category -->
 

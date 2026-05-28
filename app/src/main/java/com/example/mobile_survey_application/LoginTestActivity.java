@@ -20,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import data.local.TokenManager;
 import viewmodel.AuthViewModel;
 
 public class LoginTestActivity extends AppCompatActivity {
@@ -29,6 +30,7 @@ public class LoginTestActivity extends AppCompatActivity {
     private static final String TAG_LOGIN_DEBUG = "LOGIN_DEBUG";
 
     private AuthViewModel authViewModel;
+    private TokenManager tokenManager;
     private GoogleSignInClient googleSignInClient;
 
     private Button btnGoogleLogin;
@@ -43,6 +45,7 @@ public class LoginTestActivity extends AppCompatActivity {
                     String idToken = account.getIdToken();
                 android.util.Log.d(TAG_LOGIN_DEBUG,
                         "google idToken exists=" + (idToken != null && !idToken.isEmpty()));
+                    saveGoogleProfilePicture(account);
                     authViewModel.googleLogin(idToken);
                 } catch (ApiException e) {
                     tvResult.setText("구글 로그인 실패: " + e.getStatusCode());
@@ -62,10 +65,12 @@ public class LoginTestActivity extends AppCompatActivity {
         tvResult = findViewById(R.id.tv_result);
 
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        tokenManager = new TokenManager(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(WEB_CLIENT_ID)
                 .requestEmail()
+                .requestProfile()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
@@ -108,5 +113,19 @@ public class LoginTestActivity extends AppCompatActivity {
             Toast.makeText(this, message, Toast.LENGTH_LONG).show();
             tvResult.setText("오류: " + message);
         });
+    }
+
+    private void saveGoogleProfilePicture(GoogleSignInAccount account) {
+        if (account == null || account.getPhotoUrl() == null) {
+            return;
+        }
+
+        String pictureUrl = account.getPhotoUrl().toString();
+        if (pictureUrl == null || pictureUrl.trim().isEmpty()) {
+            return;
+        }
+
+        tokenManager.saveGoogleProfilePictureUrl(pictureUrl);
+        android.util.Log.d(TAG_LOGIN_DEBUG, "saved google profile picture url exists=true");
     }
 }
