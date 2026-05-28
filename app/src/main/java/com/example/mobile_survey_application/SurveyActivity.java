@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -65,13 +64,14 @@ public class SurveyActivity extends AppCompatActivity {
 
         btnSubmit.setOnClickListener(v -> {
             String token = tokenManager.getAccessToken();
+
             if (token == null || token.isEmpty()) {
                 Toast.makeText(SurveyActivity.this, "로그인이 필요합니다.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            surveyViewModel.submitSurvey(token);
-        });
 
+            showSubmitConfirmDialog(token);
+        });
         loadSurvey();
     }
 
@@ -80,7 +80,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         surveyViewModel.getSubmitSuccess().observe(this, success -> {
             if (Boolean.TRUE.equals(success)) {
-                showConfirmDialog(latestEarnedCredit);
+                showSubmitCompleteDialog(latestEarnedCredit);
                 surveyViewModel.doneSubmitSuccess();
             }
         });
@@ -196,20 +196,31 @@ public class SurveyActivity extends AppCompatActivity {
     }
     //endregion
 
-    private void showConfirmDialog(Integer earnedCredit) {
-        String successMessage = earnedCredit != null
-                ? earnedCredit + "p가 지급되었습니다."
-                : "제출 후에는 답변을 수정할 수 없습니다.";
+    private void showSubmitCompleteDialog(Integer earnedCredit) {
+            String successMessage = earnedCredit != null
+                    ? earnedCredit + "p가 지급되었습니다."
+                    : "제출이 완료되었습니다.";
 
+            new AlertDialog.Builder(this)
+                    .setTitle("제출 완료")
+                    .setMessage(successMessage)
+                    .setPositiveButton("확인", (dialog, which) -> {
+                        showSubmitSuccessToast();
+
+                        Intent intent = new Intent(SurveyActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .show();
+        }
+
+    private void showSubmitConfirmDialog(String token) {
         new AlertDialog.Builder(this)
-                .setTitle("설문을 완료할까요?")
-                .setMessage(successMessage)
+                .setTitle("설문을 제출할까요?")
+                .setMessage("제출 후에는 답변을 수정할 수 없습니다.")
                 .setNegativeButton("취소", null)
                 .setPositiveButton("제출", (dialog, which) -> {
-                    showSubmitSuccessToast();
-                    Intent intent = new Intent(SurveyActivity.this, HomeActivity.class);
-                    startActivity(intent);
-                    finish();
+                    surveyViewModel.submitSurvey(token);
                 })
                 .show();
     }
