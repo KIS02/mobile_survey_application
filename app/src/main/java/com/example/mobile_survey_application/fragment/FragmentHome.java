@@ -1,5 +1,7 @@
 package com.example.mobile_survey_application.fragment;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,6 +39,20 @@ import model.SurveyQuestionResponse;
 import model.SurveyResponse;
 import viewmodel.SurveyViewModel;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.ContextCompat;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
+import com.example.mobile_survey_application.worker.RandomSurveyReminderWorker;
+
+import java.util.concurrent.TimeUnit;
 
 public class FragmentHome extends Fragment {
 
@@ -67,12 +83,66 @@ public class FragmentHome extends Fragment {
     private List<SurveyQuestionResponse> internalQuestions = new ArrayList<>();
     private Map<Long, Long> selectedServerOptionByQuestionId = new HashMap<>();
 
+
+    private int reminderTime = 10;
+    private TimeUnit reminderTimeUnit = TimeUnit.SECONDS;
+
+    private static final String RANDOM_SURVEY_REMINDER_WORK_NAME =
+            "random_survey_reminder_work";
+
+    private final ActivityResultLauncher<String> notificationPermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(),
+                    isGranted -> {
+                        if (!isGranted) {
+                            Toast.makeText(
+                                    requireContext(),
+                                    "알림 권한이 없어 24시간 뒤 알림이 표시되지 않을 수 있습니다.",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+                    }
+            );
+
+    private void requestNotificationPermissionIfNeeded() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return;
+        }
+
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+        ) == PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+    }
+
+
+    private void scheduleRandomSurveyReminder() {
+        requestNotificationPermissionIfNeeded();
+
+        OneTimeWorkRequest reminderRequest =
+                new OneTimeWorkRequest.Builder(RandomSurveyReminderWorker.class)
+                        .setInitialDelay(reminderTime, reminderTimeUnit)
+                        .build();
+
+        WorkManager.getInstance(requireContext().getApplicationContext())
+                .enqueueUniqueWork(
+                        RANDOM_SURVEY_REMINDER_WORK_NAME,
+                        ExistingWorkPolicy.REPLACE,
+                        reminderRequest
+                );
+    }
+
     public FragmentHome() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
@@ -87,40 +157,15 @@ public class FragmentHome extends Fragment {
         surveyViewModel = new ViewModelProvider(this).get(SurveyViewModel.class);
 
 
+
         initInternalSurveyViews(view);
-
-        //region 랜덤설문조사 테스트용
-
-        mockInternalSurveyAdapter = new MockInternalSurveyAdapter();
-        randomSurveySlideView.setAdapter(mockInternalSurveyAdapter);
-
-        questionLayout.setVisibility(View.GONE);
-
-        randomSurveySlideView.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                super.onPageSelected(position);
-                updateMockInternalSurveyProgress(position);
-            }
-        });
-
-        nextQuestionButton.setOnClickListener(v -> {
-            int currentIndex = randomSurveySlideView.getCurrentItem();
-
-            if (currentIndex < mockInternalQuestions.size() - 1) {
-                randomSurveySlideView.setCurrentItem(currentIndex + 1, true);
-            } else {
-                submitMockInternalSurvey();
-            }
-        });
-        //endregion
-
 
         observeViewModel();
 
         randomSurveyButton.setOnClickListener(v -> {
             startInternalSurvey(randomSurvey == null ? null : randomSurvey.getId());
         });
+
         resizeRandomSurveyBox(view);
 
         return view;
@@ -156,6 +201,8 @@ public class FragmentHome extends Fragment {
         surveyViewModel.getSubmitSuccess().observe(getViewLifecycleOwner(), success -> {
             if (Boolean.TRUE.equals(success)) {
                 Toast.makeText(requireContext(), "제출이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+
+                scheduleRandomSurveyReminder();
 
                 questionLayout.setVisibility(View.GONE);
                 randomSurveyButton.setVisibility(View.VISIBLE);
@@ -369,10 +416,10 @@ public class FragmentHome extends Fragment {
 
     private String formatReward(Integer reward) {
         if (reward == null) {
-            return "0 points ✨";
+            return "0 points";
         }
 
-        return reward + " points ✨";
+        return "0 ~ " + reward + " points";
     }
 
     private String valueOrDefault(String value, String fallback) {
@@ -384,7 +431,7 @@ public class FragmentHome extends Fragment {
     }
 
 
-//region ### 랜덤 설문조사 구현부분 ###
+    //region ### 랜덤 설문조사 구현부분 ###
 
     private void initInternalSurveyViews(View view) {
         randomSurveySlideView = view.findViewById(R.id.randomSurveySlideView);
@@ -469,6 +516,8 @@ public class FragmentHome extends Fragment {
             Toast.makeText(requireContext(), "설문 ID가 없습니다.", Toast.LENGTH_SHORT).show();
             return;
         }
+
+
 
         surveyViewModel.loadSurveyById(accessToken, surveyId);
     }
@@ -659,7 +708,12 @@ public class FragmentHome extends Fragment {
         int firstUnansweredIndex = findFirstUnansweredServerQuestionIndex();
 
         if (firstUnansweredIndex != -1) {
-            Toast.makeText(requireContext(), "아직 응답하지 않은 문항이 있습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                    requireContext(),
+                    "아직 응답하지 않은 문항이 있습니다.",
+                    Toast.LENGTH_SHORT
+            ).show();
+
             randomSurveySlideView.setCurrentItem(firstUnansweredIndex, true);
             return;
         }
@@ -671,7 +725,51 @@ public class FragmentHome extends Fragment {
             return;
         }
 
-        surveyViewModel.submitSurvey(accessToken);
+        showServerSubmitConfirmDialog(accessToken);
+    }
+
+    private void showServerSubmitConfirmDialog(String accessToken) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("설문을 제출할까요?")
+                .setMessage("제출 후에는 답변을 수정할 수 없습니다.")
+                .setNegativeButton("취소", null)
+                .setPositiveButton("제출", (dialog, which) -> {
+                    surveyViewModel.submitSurvey(accessToken);
+                })
+                .show();
+    }
+
+    private void showMockSubmitConfirmDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("테스트 설문을 제출할까요?")
+                .setMessage("제출 후에는 답변을 수정할 수 없습니다.")
+                .setNegativeButton("취소", null)
+                .setPositiveButton("제출", (dialog, which) -> {
+                    completeMockInternalSurvey();
+                })
+                .show();
+    }
+
+    private void completeMockInternalSurvey() {
+        for (MockInternalQuestion question : mockInternalQuestions) {
+            Long selectedOptionId = selectedMockOptionByQuestionId.get(question.id);
+
+            Log.d(TAG_HOME_SURVEY_DEBUG,
+                    "mock submit questionId=" + question.id
+                            + ", question=" + question.content
+                            + ", selectedOptionId=" + selectedOptionId);
+        }
+
+        Toast.makeText(
+                requireContext(),
+                "테스트 내부설문이 완료되었습니다.",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        scheduleRandomSurveyReminder();
+
+        questionLayout.setVisibility(View.GONE);
+        randomSurveyButton.setVisibility(View.VISIBLE);
     }
 
     private int findFirstUnansweredServerQuestionIndex() {
@@ -902,23 +1000,7 @@ public class FragmentHome extends Fragment {
             return;
         }
 
-        for (MockInternalQuestion question : mockInternalQuestions) {
-            Long selectedOptionId = selectedMockOptionByQuestionId.get(question.id);
-
-            Log.d(TAG_HOME_SURVEY_DEBUG,
-                    "mock submit questionId=" + question.id
-                            + ", question=" + question.content
-                            + ", selectedOptionId=" + selectedOptionId);
-        }
-
-        Toast.makeText(
-                requireContext(),
-                "테스트 내부설문이 완료되었습니다.",
-                Toast.LENGTH_SHORT
-        ).show();
-
-        questionLayout.setVisibility(View.GONE);
-        randomSurveyButton.setVisibility(View.VISIBLE);
+        showMockSubmitConfirmDialog();
     }
 
     private int findFirstUnansweredMockQuestionIndex() {

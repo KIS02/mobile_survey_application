@@ -27,6 +27,9 @@ import model.SurveyOptionResponse;
 import model.SurveyQuestionResponse;
 import viewmodel.SurveyViewModel;
 
+import android.content.SharedPreferences;
+import org.json.JSONObject;
+import java.util.Iterator;
 
 public class SurveyActivity extends AppCompatActivity {
     private static final String TAG_SURVEY_DEBUG = "SURVEY_DEBUG";
@@ -38,6 +41,12 @@ public class SurveyActivity extends AppCompatActivity {
     private LinearLayout questionContainer;
     private TokenManager tokenManager;
 
+    // 자동저장 기능관련
+    private static final String PREF_SURVEY_DRAFT = "survey_draft";
+    private static final String KEY_HAS_DRAFT = "has_draft";
+    private static final String KEY_SURVEY_ID = "survey_id";
+    private static final String KEY_ANSWERS_JSON = "answers_json";
+    private SurveyDetailResponse currentSurveyDetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,7 @@ public class SurveyActivity extends AppCompatActivity {
 
         surveyViewModel.getSubmitSuccess().observe(this, success -> {
             if (Boolean.TRUE.equals(success)) {
+                clearSurveyDraft();
                 showSubmitCompleteDialog(latestEarnedCredit);
                 surveyViewModel.doneSubmitSuccess();
             }
@@ -123,6 +133,12 @@ public class SurveyActivity extends AppCompatActivity {
     private void renderSurvey(SurveyDetailResponse detail) {
         if (detail == null) {
             return;
+        }
+
+        currentSurveyDetail = detail;
+
+        if (detail.getId() != null) {
+            intentSurveyId = detail.getId();
         }
 
         Log.d(TAG_SURVEY_DEBUG, "renderSurvey surveyId=" + detail.getId()
@@ -180,6 +196,13 @@ public class SurveyActivity extends AppCompatActivity {
 
         btn[idx] = radioButton;
 
+        Long savedOptionId = getSavedOptionId(question.getId());
+
+        if (savedOptionId != null && savedOptionId.equals(option.getId())) {
+            radioButton.setChecked(true);
+            surveyViewModel.selectOption(question.getId(), option.getId());
+        }
+
         radioButton.setOnClickListener(v -> {
             for (RadioButton rb : btn) {
                 if (rb != null) {
@@ -190,9 +213,67 @@ public class SurveyActivity extends AppCompatActivity {
             btn[idx].setChecked(true);
 
             surveyViewModel.selectOption(question.getId(), option.getId());
+
+            saveSurveyDraft(question.getId(), option.getId());
         });
 
         choiceRow.addView(choiceView);
+    }
+
+    private void saveSurveyDraft(Long questionId, Long optionId) {
+        if (intentSurveyId == null || questionId == null || optionId == null) {
+            return;
+        }
+
+        SharedPreferences prefs = getSharedPreferences(PREF_SURVEY_DRAFT, MODE_PRIVATE);
+
+        try {
+            String oldJson = prefs.getString(KEY_ANSWERS_JSON, "{}");
+            JSONObject answersJson = new JSONObject(oldJson);
+
+            answersJson.put(String.valueOf(questionId), optionId);
+
+            prefs.edit()
+                    .putBoolean(KEY_HAS_DRAFT, true)
+                    .putLong(KEY_SURVEY_ID, intentSurveyId)
+                    .putString(KEY_ANSWERS_JSON, answersJson.toString())
+                    .apply();
+
+            Log.d(TAG_SURVEY_DEBUG, "auto saved questionId=" + questionId + ", optionId=" + optionId);
+
+        } catch (Exception e) {
+            Log.e(TAG_SURVEY_DEBUG, "saveSurveyDraft error", e);
+        }
+    }
+
+    private Long getSavedOptionId(Long questionId) {
+        if (questionId == null) {
+            return null;
+        }
+
+        SharedPreferences prefs = getSharedPreferences(PREF_SURVEY_DRAFT, MODE_PRIVATE);
+
+        try {
+            String json = prefs.getString(KEY_ANSWERS_JSON, "{}");
+            JSONObject answersJson = new JSONObject(json);
+
+            String key = String.valueOf(questionId);
+
+            if (!answersJson.has(key)) {
+                return null;
+            }
+
+            return answersJson.getLong(key);
+
+        } catch (Exception e) {
+            Log.e(TAG_SURVEY_DEBUG, "getSavedOptionId error", e);
+            return null;
+        }
+    }
+
+    private void clearSurveyDraft() {
+        SharedPreferences prefs = getSharedPreferences(PREF_SURVEY_DRAFT, MODE_PRIVATE);
+        prefs.edit().clear().apply();
     }
     //endregion
 
