@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import com.example.mobile_survey_application.LogoutActivity;
 import com.example.mobile_survey_application.WithdrawActivity;
 import com.example.mobile_survey_application.R;
 
+import data.local.NotificationPreferenceManager;
 import data.local.TokenManager;
 import data.repository.UserRepository;
 
@@ -24,6 +26,8 @@ public class FragmentSetting extends Fragment {
 
     private LinearLayout layoutLogout;
     private LinearLayout layoutWithdraw;
+    private Switch switchNotification;
+    private NotificationPreferenceManager notificationPreferenceManager;
 
     @Nullable
     @Override
@@ -35,11 +39,22 @@ public class FragmentSetting extends Fragment {
 
         layoutLogout = view.findViewById(R.id.layoutLogout);
         layoutWithdraw = view.findViewById(R.id.layoutWithdraw);
+        switchNotification = view.findViewById(R.id.switchNotification);
+
+        notificationPreferenceManager = new NotificationPreferenceManager(requireContext());
+        setupNotificationSwitch();
 
         layoutLogout.setOnClickListener(v -> showLogoutDialog());
         layoutWithdraw.setOnClickListener(v -> showWithdrawDialog());
 
         return view;
+    }
+
+    private void setupNotificationSwitch() {
+        switchNotification.setChecked(notificationPreferenceManager.isNotificationEnabled());
+        switchNotification.setOnCheckedChangeListener((buttonView, isChecked) ->
+                notificationPreferenceManager.setNotificationEnabled(isChecked)
+        );
     }
 
     private void showLogoutDialog() {

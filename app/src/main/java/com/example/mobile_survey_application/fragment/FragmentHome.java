@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import data.local.NotificationPreferenceManager;
 import data.local.TokenManager;
 import model.SurveyDetailResponse;
 import model.SurveyOptionResponse;
@@ -84,11 +85,10 @@ public class FragmentHome extends Fragment {
     private Map<Long, Long> selectedServerOptionByQuestionId = new HashMap<>();
 
 
-    private int reminderTime = 10;
-    private TimeUnit reminderTimeUnit = TimeUnit.SECONDS;
+    private int reminderTime = 24;
+    private TimeUnit reminderTimeUnit = TimeUnit.HOURS;
 
-    private static final String RANDOM_SURVEY_REMINDER_WORK_NAME =
-            "random_survey_reminder_work";
+    private NotificationPreferenceManager notificationPreferenceManager;
 
     private final ActivityResultLauncher<String> notificationPermissionLauncher =
             registerForActivityResult(
@@ -97,7 +97,7 @@ public class FragmentHome extends Fragment {
                         if (!isGranted) {
                             Toast.makeText(
                                     requireContext(),
-                                    "알림 권한이 없어 24시간 뒤 알림이 표시되지 않을 수 있습니다.",
+                                    "알림 권한이 없어 24시간 뒤 발송 예정인 알림이 표시되지 않을 수 있습니다.",
                                     Toast.LENGTH_SHORT
                             ).show();
                         }
@@ -121,6 +121,15 @@ public class FragmentHome extends Fragment {
 
 
     private void scheduleRandomSurveyReminder() {
+        if (notificationPreferenceManager == null) {
+            notificationPreferenceManager = new NotificationPreferenceManager(requireContext());
+        }
+
+        if (!notificationPreferenceManager.isNotificationEnabled()) {
+            notificationPreferenceManager.cancelRandomSurveyReminder();
+            return;
+        }
+
         requestNotificationPermissionIfNeeded();
 
         OneTimeWorkRequest reminderRequest =
@@ -130,10 +139,16 @@ public class FragmentHome extends Fragment {
 
         WorkManager.getInstance(requireContext().getApplicationContext())
                 .enqueueUniqueWork(
-                        RANDOM_SURVEY_REMINDER_WORK_NAME,
+                        NotificationPreferenceManager.RANDOM_SURVEY_REMINDER_WORK_NAME,
                         ExistingWorkPolicy.REPLACE,
                         reminderRequest
                 );
+
+        Toast.makeText(
+                requireContext(),
+                "24시간 뒤 랜덤 설문 알림이 발송됩니다.",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     public FragmentHome() {
@@ -154,6 +169,7 @@ public class FragmentHome extends Fragment {
         nextQuestionButton = view.findViewById(R.id.nextQuestionButton);
 
         tokenManager = new TokenManager(requireContext());
+        notificationPreferenceManager = new NotificationPreferenceManager(requireContext());
         surveyViewModel = new ViewModelProvider(this).get(SurveyViewModel.class);
 
 

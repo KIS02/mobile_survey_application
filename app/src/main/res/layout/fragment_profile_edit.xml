@@ -98,6 +98,7 @@
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
                             android:hint="이름"
+                            android:maxLength="20"
                             android:paddingStart="0dp"
                             android:textColor="#222222"
                             android:textSize="15sp" />
@@ -127,7 +128,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
-                            android:hint="전화번호"
+                            android:hint="01012345678"
+                            android:inputType="number"
+                            android:maxLength="13"
                             android:paddingStart="0dp"
                             android:textColor="#222222"
                             android:textSize="15sp" />
@@ -158,6 +161,7 @@
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
                             android:hint="닉네임"
+                            android:maxLength="12"
                             android:paddingStart="0dp"
                             android:textColor="#222222"
                             android:textSize="15sp" />
@@ -187,7 +191,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
-                            android:hint="YYYY-MM-DD"
+                            android:hint="20010505"
+                            android:inputType="number"
+                            android:maxLength="10"
                             android:paddingStart="0dp"
                             android:textColor="#222222"
                             android:textSize="15sp" />

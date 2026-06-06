@@ -1,24 +1,29 @@
 package com.example.mobile_survey_application.fragment;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import androidx.fragment.app.Fragment;
-
-import com.example.mobile_survey_application.R;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.mobile_survey_application.R;
+import com.example.mobile_survey_application.util.BirthDateTextWatcher;
+import com.example.mobile_survey_application.util.PhoneNumberTextWatcher;
 import com.example.mobile_survey_application.util.ProfileImageHelper;
+import com.example.mobile_survey_application.util.RegisterInputValidator;
+
+import java.util.ArrayList;
+import java.util.List;
 import model.CategoryResponse;
 import model.UserResponse;
 import model.UserUpdateRequest;
@@ -58,6 +63,8 @@ public class FragmentProfileEdit extends Fragment {
         etLocation = view.findViewById(R.id.etProfileLocation);
         etRegion = view.findViewById(R.id.etProfileRegion);
         txtCategory = view.findViewById(R.id.txtCategory);
+
+        setupInputValidation();
 
         authViewModel.loadMyProfile();
         authViewModel.loadCategories();
@@ -114,22 +121,101 @@ public class FragmentProfileEdit extends Fragment {
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
         });
 
-        view.findViewById(R.id.btnSaveProfile).setOnClickListener(v -> {
-            String birthDate = etBirthDate.getText().toString().trim();
-            Log.d(TAG_PROFILE_DEBUG,
-                    "FragmentProfileEdit save click birthDate=" + valueOrEmpty(birthDate));
-            UserUpdateRequest request = new UserUpdateRequest(
-                    emptyToNull(etName.getText().toString().trim()),
-                    emptyToNull(etTelephone.getText().toString().trim()),
-                    emptyToNull(etNickname.getText().toString().trim()),
-                    emptyToNull(birthDate),
-                    emptyToNull(etLocation.getText().toString().trim()),
-                    emptyToNull(etRegion.getText().toString().trim())
-            );
-            authViewModel.updateMyProfile(request);
-        });
+        view.findViewById(R.id.btnSaveProfile).setOnClickListener(v -> saveProfile());
 
         return view;
+    }
+
+    private void setupInputValidation() {
+        etName.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(20),
+                RegisterInputValidator.nameInputFilter()
+        });
+        etNickname.setFilters(new InputFilter[]{
+                new InputFilter.LengthFilter(12),
+                RegisterInputValidator.nicknameInputFilter()
+        });
+        etTelephone.addTextChangedListener(new PhoneNumberTextWatcher(etTelephone));
+        etBirthDate.addTextChangedListener(new BirthDateTextWatcher(etBirthDate));
+        clearErrorOnChange(etName);
+        clearErrorOnChange(etTelephone);
+        clearErrorOnChange(etNickname);
+        clearErrorOnChange(etBirthDate);
+    }
+
+    private void clearErrorOnChange(EditText editText) {
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                editText.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
+    private void saveProfile() {
+        clearFieldErrors();
+
+        String name = etName.getText().toString().trim();
+        String telephone = etTelephone.getText().toString().trim();
+        String nickname = etNickname.getText().toString().trim();
+        String birthDate = etBirthDate.getText().toString().trim();
+
+        String nameError = RegisterInputValidator.validateName(name);
+        if (nameError != null) {
+            showFieldError(etName, nameError);
+            return;
+        }
+
+        String telephoneError = RegisterInputValidator.validateTelephone(telephone);
+        if (telephoneError != null) {
+            showFieldError(etTelephone, telephoneError);
+            return;
+        }
+
+        String nicknameError = RegisterInputValidator.validateNickname(nickname);
+        if (nicknameError != null) {
+            showFieldError(etNickname, nicknameError);
+            return;
+        }
+
+        String birthDateError = RegisterInputValidator.validateBirthDate(birthDate);
+        if (birthDateError != null) {
+            showFieldError(etBirthDate, birthDateError);
+            return;
+        }
+
+        Log.d(TAG_PROFILE_DEBUG,
+                "FragmentProfileEdit save click birthDate=" + valueOrEmpty(birthDate));
+
+        UserUpdateRequest request = new UserUpdateRequest(
+                emptyToNull(name),
+                emptyToNull(telephone),
+                emptyToNull(nickname),
+                emptyToNull(birthDate),
+                emptyToNull(etLocation.getText().toString().trim()),
+                emptyToNull(etRegion.getText().toString().trim())
+        );
+        authViewModel.updateMyProfile(request);
+    }
+
+    private void clearFieldErrors() {
+        etName.setError(null);
+        etTelephone.setError(null);
+        etNickname.setError(null);
+        etBirthDate.setError(null);
+    }
+
+    private void showFieldError(EditText editText, String message) {
+        editText.setError(message);
+        editText.requestFocus();
     }
 
     private void bindProfile(UserResponse user) {

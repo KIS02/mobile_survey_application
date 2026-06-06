@@ -20,6 +20,8 @@ import androidx.work.WorkerParameters;
 import com.example.mobile_survey_application.HomeActivity;
 import com.example.mobile_survey_application.R;
 
+import data.local.NotificationPreferenceManager;
+
 public class RandomSurveyReminderWorker extends Worker {
 
     private static final String CHANNEL_ID = "random_survey_reminder_channel";
@@ -37,6 +39,10 @@ public class RandomSurveyReminderWorker extends Worker {
     @Override
     public Result doWork() {
         Context context = getApplicationContext();
+
+        if (!new NotificationPreferenceManager(context).isNotificationEnabled()) {
+            return Result.success();
+        }
 
         createNotificationChannel(context);
 
