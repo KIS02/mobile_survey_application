@@ -56,4 +56,8 @@ public class RetrofitClient {
     public static SurveyApiService getSurveyApiService() {
         return getInstance().create(SurveyApiService.class);
     }
+
+    public static AdminApiService getAdminApiService() {
+        return getInstance().create(AdminApiService.class);
+    }
 }

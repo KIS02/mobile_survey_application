@@ -97,6 +97,12 @@ public class LoginTestActivity extends AppCompatActivity {
                 intent.putExtra(RegisterActivity.EXTRA_TEMP_TOKEN, response.getTempToken());
                 intent.putExtra(RegisterActivity.EXTRA_NAME, response.getName());
                 startActivity(intent);
+            } else if ("ADMIN".equals(response.getRole())) {
+                // 관리자 → 관리자 홈 화면으로 이동
+                Toast.makeText(this, "관리자로 로그인되었습니다.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, AdminActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             } else {
                 Toast.makeText(this, "로그인 성공!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, HomeActivity.class);
