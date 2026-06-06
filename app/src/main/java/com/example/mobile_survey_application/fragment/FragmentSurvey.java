@@ -180,9 +180,9 @@ public class FragmentSurvey extends Fragment {
 
     private String formatReward(Integer reward) {
         if (reward == null) {
-            return "0 points ✨";
+            return "0 points";
         }
-        return reward + " points ✨";
+        return "0 ~ " + reward + " points ";
     }
 
     private String valueOrDefault(String value, String fallback) {
