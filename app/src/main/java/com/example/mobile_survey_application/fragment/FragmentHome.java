@@ -55,6 +55,11 @@ import com.example.mobile_survey_application.worker.RandomSurveyReminderWorker;
 
 import java.util.concurrent.TimeUnit;
 
+import android.os.CountDownTimer;
+
+import data.local.RandomSurveyCooldownManager;
+
+
 public class FragmentHome extends Fragment {
 
 
@@ -85,9 +90,13 @@ public class FragmentHome extends Fragment {
     private Map<Long, Long> selectedServerOptionByQuestionId = new HashMap<>();
 
 
-    private int reminderTime = 24;
-    private TimeUnit reminderTimeUnit = TimeUnit.HOURS;
+    private int reminderTime = 30;
+    private TimeUnit reminderTimeUnit = TimeUnit.SECONDS;
 
+    private RandomSurveyCooldownManager randomSurveyCooldownManager;
+    private CountDownTimer randomSurveyCountDownTimer;
+
+    private String currentRandomSurveyText = "";
     private NotificationPreferenceManager notificationPreferenceManager;
 
     private final ActivityResultLauncher<String> notificationPermissionLauncher =
@@ -151,6 +160,87 @@ public class FragmentHome extends Fragment {
         ).show();
     }
 
+    private void beginRandomSurveyCooldown() {
+        if (randomSurveyCooldownManager == null) {
+            randomSurveyCooldownManager = new RandomSurveyCooldownManager(requireContext());
+        }
+
+        randomSurveyCooldownManager.startCooldown(reminderTime, reminderTimeUnit);
+
+        scheduleRandomSurveyReminder();
+
+        updateRandomSurveyCooldownUi();
+    }
+
+    private void updateRandomSurveyCooldownUi() {
+        stopRandomSurveyCooldownTimer();
+
+        if (randomSurveyCooldownManager == null || !randomSurveyCooldownManager.isCoolingDown()) {
+            renderRandomSurveyAvailableUi();
+            return;
+        }
+
+        long remainingMillis = randomSurveyCooldownManager.getRemainingMillis();
+
+        randomSurveyButton.setEnabled(false);
+
+        randomSurveyCountDownTimer = new CountDownTimer(remainingMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                randomSurveyButton.setText(
+                        "랜덤 설문은 잠시 후 다시 가능합니다.\n" +
+                                "남은 시간 " + formatRemainingTime(millisUntilFinished)
+                );
+            }
+
+            @Override
+            public void onFinish() {
+                if (randomSurveyCooldownManager != null) {
+                    randomSurveyCooldownManager.clearCooldown();
+                }
+
+                renderRandomSurveyAvailableUi();
+            }
+        };
+
+        randomSurveyCountDownTimer.start();
+    }
+
+    private void renderRandomSurveyAvailableUi() {
+        stopRandomSurveyCooldownTimer();
+
+        randomSurveyButton.setEnabled(true);
+
+        if (currentRandomSurveyText != null && !currentRandomSurveyText.isEmpty()) {
+            randomSurveyButton.setText(currentRandomSurveyText);
+        } else {
+            randomSurveyButton.setText("진행 가능한 랜덤 설문이 없습니다.");
+        }
+    }
+
+    private void stopRandomSurveyCooldownTimer() {
+        if (randomSurveyCountDownTimer != null) {
+            randomSurveyCountDownTimer.cancel();
+            randomSurveyCountDownTimer = null;
+        }
+    }
+
+    private String formatRemainingTime(long millis) {
+        long totalSeconds = millis / 1000;
+
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        stopRandomSurveyCooldownTimer();
+    }
+
     public FragmentHome() {
     }
 
@@ -170,8 +260,8 @@ public class FragmentHome extends Fragment {
 
         tokenManager = new TokenManager(requireContext());
         notificationPreferenceManager = new NotificationPreferenceManager(requireContext());
+        randomSurveyCooldownManager = new RandomSurveyCooldownManager(requireContext());
         surveyViewModel = new ViewModelProvider(this).get(SurveyViewModel.class);
-
 
 
         initInternalSurveyViews(view);
@@ -179,6 +269,17 @@ public class FragmentHome extends Fragment {
         observeViewModel();
 
         randomSurveyButton.setOnClickListener(v -> {
+            if (randomSurveyCooldownManager != null && randomSurveyCooldownManager.isCoolingDown()) {
+                Toast.makeText(
+                        requireContext(),
+                        "아직 랜덤 설문을 다시 할 수 없습니다.",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                updateRandomSurveyCooldownUi();
+                return;
+            }
+
             startInternalSurvey(randomSurvey == null ? null : randomSurvey.getId());
         });
 
@@ -218,7 +319,7 @@ public class FragmentHome extends Fragment {
             if (Boolean.TRUE.equals(success)) {
                 Toast.makeText(requireContext(), "제출이 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
-                scheduleRandomSurveyReminder();
+                beginRandomSurveyCooldown();
 
                 questionLayout.setVisibility(View.GONE);
                 randomSurveyButton.setVisibility(View.VISIBLE);
@@ -312,13 +413,16 @@ public class FragmentHome extends Fragment {
         String category = valueOrDefault(randomSurvey.getCategoryName(), "카테고리 없음");
         String reward = formatReward(randomSurvey.getReward());
 
-        randomSurveyButton.setText(
+        currentRandomSurveyText =
                 title +
                         "\n" +
                         category +
                         " · " +
-                        reward
-        );
+                        reward;
+
+        randomSurveyButton.setText(currentRandomSurveyText);
+
+        updateRandomSurveyCooldownUi();
 
         if (questionLayout != null) {
             questionLayout.setVisibility(View.GONE);
@@ -782,7 +886,7 @@ public class FragmentHome extends Fragment {
                 Toast.LENGTH_SHORT
         ).show();
 
-        scheduleRandomSurveyReminder();
+        beginRandomSurveyCooldown();
 
         questionLayout.setVisibility(View.GONE);
         randomSurveyButton.setVisibility(View.VISIBLE);
