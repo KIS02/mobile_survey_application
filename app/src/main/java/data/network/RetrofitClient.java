@@ -5,6 +5,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import java.util.concurrent.TimeUnit;
+
 public class RetrofitClient {
 
     private static final String BASE_URL = com.example.mobile_survey_application.BuildConfig.BASE_URL;
@@ -18,6 +20,9 @@ public class RetrofitClient {
 
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(logging)
+                    .connectTimeout(15, TimeUnit.SECONDS)
+                    .readTimeout(60, TimeUnit.SECONDS)   // AI 응답 대기 (Gemini 느릴 수 있음)
+                    .writeTimeout(15, TimeUnit.SECONDS)
                     .build();
 
             retrofit = new Retrofit.Builder()

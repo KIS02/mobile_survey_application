@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <!-- 제목 + 상태 배지 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <TextView
+                android:id="@+id/tv_survey_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#111111" />
+
+            <TextView
+                android:id="@+id/tv_status_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="3dp"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/badge_rounded" />
+        </LinearLayout>
+
+        <!-- 카테고리 / 문항 수 / 리워드 -->
+        <TextView
+            android:id="@+id/tv_survey_meta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <!-- 응답 현황 -->
+        <TextView
+            android:id="@+id/tv_response_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#444444"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 버튼 행 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_edit"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="수정"
+                android:textSize="11sp"
+                android:backgroundTint="#EDE7F6"
+                android:textColor="#6750A4" />
+
+            <Button
+                android:id="@+id/btn_status_change"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="활성화"
+                android:textSize="11sp"
+                android:backgroundTint="#E8F5E9"
+                android:textColor="#2E7D32" />
+
+            <!-- DRAFT 전용: DRAFT → CLOSED -->
+            <Button
+                android:id="@+id/btn_close_draft"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="마감"
+                android:textSize="11sp"
+                android:backgroundTint="#FFF3E0"
+                android:textColor="#E65100"
+                android:visibility="gone" />
+
+            <!-- ACTIVE 전용: ACTIVE → DRAFT (수정 가능 상태로 되돌리기) -->
+            <Button
+                android:id="@+id/btn_revert_draft"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="중지"
+                android:textSize="11sp"
+                android:backgroundTint="#E3F2FD"
+                android:textColor="#1565C0"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btn_delete"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_weight="1"
+                android:text="삭제"
+                android:textSize="11sp"
+                android:backgroundTint="#FFEBEE"
+                android:textColor="#C62828" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -32,9 +32,11 @@ public class AdminActivity extends AppCompatActivity {
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        findViewById(R.id.card_create_survey).setOnClickListener(v -> {
-            startActivity(new Intent(this, CreateSurveyActivity.class));
-        });
+        findViewById(R.id.card_create_survey).setOnClickListener(v ->
+                startActivity(new Intent(this, CreateSurveyActivity.class)));
+
+        findViewById(R.id.card_manage_survey).setOnClickListener(v ->
+                startActivity(new Intent(this, SurveyManageActivity.class)));
 
         TextView tvLogout = findViewById(R.id.tv_admin_logout);
         tvLogout.setOnClickListener(v -> logout());

@@ -9,7 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="#1976D2"
+        android:background="#6750A4"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp">
@@ -47,7 +47,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/card_create_survey"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="100dp"
                 android:layout_marginBottom="12dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="4dp"
@@ -63,17 +63,45 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="📋"
-                        android:textSize="32sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:text="설문 등록"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#333333" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- 설문 관리 카드 -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_manage_survey"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="12dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                xmlns:app="http://schemas.android.com/apk/res-auto">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="설문 관리"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#333333" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="수정 · 삭제 · 활성화"
+                        android:textSize="12sp"
+                        android:textColor="#888888" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

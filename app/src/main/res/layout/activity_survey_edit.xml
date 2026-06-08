@@ -23,18 +23,31 @@
             android:contentDescription="뒤로가기" />
 
         <TextView
+            android:id="@+id/tv_toolbar_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="설문 등록"
+            android:text="설문 수정"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- ACTIVE 상태 안내 -->
+    <TextView
+        android:id="@+id/tv_active_notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="활성화된 설문입니다. 시작일/종료일만 수정 가능합니다."
+        android:textSize="13sp"
+        android:textColor="#FFFFFF"
+        android:background="#FF8F00"
+        android:padding="10dp"
+        android:gravity="center"
+        android:visibility="gone" />
+
     <ScrollView
-        android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -85,7 +98,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="리워드 크레딧 *"
+                    android:hint="리워드 크레딧"
                     android:inputType="number"
                     android:background="@android:color/white"
                     android:padding="12dp"
@@ -107,11 +120,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="타겟 조건 (선택)"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#6750A4"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="6dp" />
 
             <Spinner
                 android:id="@+id/spinner_gender"
@@ -125,7 +137,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="16dp">
 
                 <EditText
                     android:id="@+id/et_age_min"
@@ -149,141 +161,40 @@
                     android:padding="12dp" />
             </LinearLayout>
 
-            <!-- 문항 목록 -->
+            <!-- 일정 -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="문항"
-                android:textSize="16sp"
+                android:text="설문 일정"
+                android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="#6750A4"
-                android:layout_marginTop="8dp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/et_start_at"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="시작일시 (예: 2026-06-10 09:00)"
+                android:inputType="text"
+                android:background="@android:color/white"
+                android:padding="12dp"
                 android:layout_marginBottom="8dp" />
 
-            <LinearLayout
-                android:id="@+id/container_questions"
+            <EditText
+                android:id="@+id/et_end_at"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            <Button
-                android:id="@+id/btn_add_question"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:text="+ 문항 추가"
-                android:backgroundTint="#EDE7F6"
-                android:textColor="#6750A4"
-                android:textStyle="bold" />
-
-            <!-- AI 신뢰도 문항 설정 -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="AI 신뢰도 문항 생성"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#6750A4"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="원본 문항 중 랜덤으로 선택해 유사/반대 문항을 AI가 생성합니다."
-                android:textSize="12sp"
-                android:textColor="#888888"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
-
-                <EditText
-                    android:id="@+id/et_similar_count"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="유사 문항 개수"
-                    android:inputType="number"
-                    android:background="@android:color/white"
-                    android:padding="12dp"
-                    android:layout_marginEnd="8dp" />
-
-                <EditText
-                    android:id="@+id/et_reverse_count"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="반대 문항 개수"
-                    android:inputType="number"
-                    android:background="@android:color/white"
-                    android:padding="12dp" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btn_ai_preview"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginBottom="8dp"
-                android:text="AI 유사/반대 문항 미리보기"
-                android:backgroundTint="#4CAF50"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold" />
-
-            <!-- 지시/거짓 문항 독립 추가 -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="신뢰도 문항 직접 추가"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#6750A4"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="하드코딩 풀에서 랜덤으로 1개씩 추가됩니다."
-                android:textSize="12sp"
-                android:textColor="#888888"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="4dp">
-
-                <Button
-                    android:id="@+id/btn_add_instruction"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:text="+ 지시 문항 추가"
-                    android:backgroundTint="#E3F2FD"
-                    android:textColor="#1565C0"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btn_add_bogus"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:text="+ 거짓 문항 추가"
-                    android:backgroundTint="#FCE4EC"
-                    android:textColor="#880E4F"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:hint="종료일시 (예: 2026-07-10 23:59)"
+                android:inputType="text"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp" />
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- 하단 등록 버튼 -->
+    <!-- 하단 저장 버튼 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -292,13 +203,13 @@
         android:padding="16dp">
 
         <Button
-            android:id="@+id/btn_submit"
+            android:id="@+id/btn_save"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="설문 등록 (DRAFT 저장)"
+            android:text="저장"
             android:textSize="16sp"
-                android:backgroundTint="#6750A4"
-                android:textColor="#FFFFFF" />
+            android:backgroundTint="#6750A4"
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 
     <ProgressBar
