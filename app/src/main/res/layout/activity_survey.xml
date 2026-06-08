@@ -22,9 +22,10 @@
 
     <!-- 설문 주제 -->
     <TextView
+        android:id="@+id/tv_survey_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="청소년들의 식습관에 관한 조사"
+        android:text=""
         android:textSize="14sp"
         android:textStyle="bold"
         android:textColor="#000000"
@@ -32,9 +33,10 @@
 
     <!-- 설명 -->
     <TextView
+        android:id="@+id/tv_survey_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="다음 문항에 대해 본인의 식습관과 가장 가까운 정도를 선택해주세요."
+        android:text=""
         android:textSize="9sp"
         android:textColor="#000000"
         android:layout_marginTop="8dp" />

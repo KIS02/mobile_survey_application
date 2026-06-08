@@ -304,9 +304,7 @@ public class FragmentHome extends Fragment {
                         reward
         );
 
-        if (questionLayout != null) {
-            questionLayout.setVisibility(View.GONE);
-        }
+        // questionLayout 가시성은 건드리지 않음 — 진행 중인 내부 설문이 있을 수 있음
     }
 
     private void renderRecommendedSurveys(List<SurveyResponse> surveys) {
