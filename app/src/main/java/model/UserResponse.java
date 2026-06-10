@@ -9,6 +9,7 @@ public class UserResponse {
     private Long id;
     private String name;
     private String email;
+    private String role;
     private String telephone;
     private String nickname;
     private String gender;
@@ -33,5 +34,6 @@ public class UserResponse {
     public String getOccupation() { return occupation; }
     public Integer getCredit() { return credit; }
     public String getImagePath() { return imagePath; }
+    public String getRole() { return role; }
     public List<PreferenceResponse> getPreferences() { return preferences; }
 }

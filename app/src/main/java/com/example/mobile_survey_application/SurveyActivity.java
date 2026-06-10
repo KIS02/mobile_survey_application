@@ -39,6 +39,8 @@ public class SurveyActivity extends AppCompatActivity {
     private Long intentSurveyId;
     private Integer latestEarnedCredit;
     private LinearLayout questionContainer;
+    private android.widget.TextView tvSurveyTitle;
+    private android.widget.TextView tvSurveyDescription;
     private TokenManager tokenManager;
 
     // 자동저장 기능관련
@@ -56,6 +58,8 @@ public class SurveyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_survey);
 
         questionContainer = findViewById(R.id.question_container);
+        tvSurveyTitle = findViewById(R.id.tv_survey_title);
+        tvSurveyDescription = findViewById(R.id.tv_survey_description);
         Button btnSubmit = findViewById(R.id.btnSubmit);
 
         tokenManager = new TokenManager(this);
@@ -143,6 +147,9 @@ public class SurveyActivity extends AppCompatActivity {
 
         Log.d(TAG_SURVEY_DEBUG, "renderSurvey surveyId=" + detail.getId()
                 + ", questionCount=" + (detail.getQuestions() == null ? 0 : detail.getQuestions().size()));
+
+        tvSurveyTitle.setText(detail.getTitle() != null ? detail.getTitle() : "");
+        tvSurveyDescription.setText(detail.getDescription() != null ? detail.getDescription() : "");
 
         questionContainer.removeAllViews();
 

@@ -136,6 +136,12 @@ public class FragmentSurvey extends Fragment {
             } else {
                 tagLayout.addView(createTagTextView(tagLayout, categoryName));
             }
+            if (survey.getTargetGender() != null) {
+                String genderLabel = "MALE".equals(survey.getTargetGender()) ? "남성" : "여성";
+                tagLayout.addView(createTagTextView(tagLayout, genderLabel));
+            }
+            String ageLabel = formatAgeTag(survey.getTargetAgeMin(), survey.getTargetAgeMax());
+            if (ageLabel != null) tagLayout.addView(createTagTextView(tagLayout, ageLabel));
 
             itemSurveyCard.setOnClickListener(v -> {
                 Long surveyId = survey.getId();
@@ -146,7 +152,7 @@ public class FragmentSurvey extends Fragment {
             LinearLayout.LayoutParams cardParams =
                     new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
-                            dp(92)
+                            LinearLayout.LayoutParams.WRAP_CONTENT
                     );
 
             if (i != 0) {
@@ -156,6 +162,19 @@ public class FragmentSurvey extends Fragment {
             surveyCard.setLayoutParams(cardParams);
             surveyListLayout.addView(surveyCard);
         }
+    }
+
+    private String formatAgeTag(Integer ageMin, Integer ageMax) {
+        if (ageMin == null && ageMax == null) return null;
+        if (ageMin != null && ageMax != null) {
+            int decadeMin = (ageMin / 10) * 10;
+            int decadeMax = (ageMax / 10) * 10;
+            return decadeMin == decadeMax
+                    ? decadeMin + "대"
+                    : decadeMin + "~" + decadeMax + "대";
+        }
+        if (ageMin != null) return (ageMin / 10) * 10 + "대 이상";
+        return (ageMax / 10) * 10 + "대 이하";
     }
 
     private TextView createTagTextView(LinearLayout parent, String tag) {

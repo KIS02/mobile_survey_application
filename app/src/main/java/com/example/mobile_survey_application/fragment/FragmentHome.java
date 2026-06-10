@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import data.local.NotificationPreferenceManager;
 import data.local.TokenManager;
@@ -409,7 +409,7 @@ public class FragmentHome extends Fragment {
     }
 
     private void setRandomSurvey(List<SurveyResponse> surveys) {
-        int randomIndex = new Random().nextInt(surveys.size());
+        int randomIndex = ThreadLocalRandom.current().nextInt(surveys.size());
         randomSurvey = surveys.get(randomIndex);
 
         String title = valueOrDefault(randomSurvey.getTitle(), "랜덤 설문");
@@ -427,9 +427,7 @@ public class FragmentHome extends Fragment {
 
         updateRandomSurveyCooldownUi();
 
-        if (questionLayout != null) {
-            questionLayout.setVisibility(View.GONE);
-        }
+        // questionLayout 가시성은 건드리지 않음 — 진행 중인 내부 설문이 있을 수 있음
     }
 
     private void renderRecommendedSurveys(List<SurveyResponse> surveys) {
@@ -465,19 +463,24 @@ public class FragmentHome extends Fragment {
             tagLayout.removeAllViews();
 
             String categoryName = survey.getCategoryName();
-
             if (categoryName == null || categoryName.trim().isEmpty()) {
                 tagLayout.addView(createTagTextView(tagLayout, "카테고리 없음"));
             } else {
                 tagLayout.addView(createTagTextView(tagLayout, categoryName));
             }
+            if (survey.getTargetGender() != null) {
+                String genderLabel = "MALE".equals(survey.getTargetGender()) ? "남성" : "여성";
+                tagLayout.addView(createTagTextView(tagLayout, genderLabel));
+            }
+            String ageLabel = formatAgeTag(survey.getTargetAgeMin(), survey.getTargetAgeMax());
+            if (ageLabel != null) tagLayout.addView(createTagTextView(tagLayout, ageLabel));
 
             itemSurveyCard.setOnClickListener(v -> showSurveyDialog(survey));
 
             LinearLayout.LayoutParams cardParams =
                     new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
-                            dp(92)
+                            LinearLayout.LayoutParams.WRAP_CONTENT
                     );
 
             if (i != 0) {
@@ -487,6 +490,19 @@ public class FragmentHome extends Fragment {
             surveyCard.setLayoutParams(cardParams);
             selectSurveyList.addView(surveyCard);
         }
+    }
+
+    private String formatAgeTag(Integer ageMin, Integer ageMax) {
+        if (ageMin == null && ageMax == null) return null;
+        if (ageMin != null && ageMax != null) {
+            int decadeMin = (ageMin / 10) * 10;
+            int decadeMax = (ageMax / 10) * 10;
+            return decadeMin == decadeMax
+                    ? decadeMin + "대"
+                    : decadeMin + "~" + decadeMax + "대";
+        }
+        if (ageMin != null) return (ageMin / 10) * 10 + "대 이상";
+        return (ageMax / 10) * 10 + "대 이하";
     }
 
     private TextView createTagTextView(LinearLayout parent, String tag) {

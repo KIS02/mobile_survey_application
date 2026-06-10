@@ -32,6 +32,10 @@
         <activity android:name=".LoginTestActivity" />
         <activity android:name=".LogoutActivity" />
         <activity android:name=".WithdrawActivity" />
+        <activity android:name=".AdminActivity" />
+        <activity android:name=".CreateSurveyActivity" />
+        <activity android:name=".SurveyManageActivity" />
+        <activity android:name=".SurveyEditActivity" />
 
     </application>
 
