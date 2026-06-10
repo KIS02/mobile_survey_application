@@ -36,8 +36,8 @@ android {
     buildTypes {
         debug {
             signingConfig = signingConfigs.getByName("debug")
-//            buildConfigField("String", "BASE_URL", "\"https://mobile.bizlinkersoft.com/\"")
-            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"")
+            buildConfigField("String", "BASE_URL", "\"https://mobile.bizlinkersoft.com/\"")
+//            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/\"")
         }
         release {
             isMinifyEnabled = false

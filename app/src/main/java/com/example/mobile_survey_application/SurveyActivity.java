@@ -12,10 +12,11 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.mobile_survey_application.util.EdgeToEdgeHelper;
 
 import java.util.List;
 
@@ -54,8 +55,8 @@ public class SurveyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_survey);
+        EdgeToEdgeHelper.enableWithRootInsets(this, R.id.root_layout);
 
         questionContainer = findViewById(R.id.question_container);
         tvSurveyTitle = findViewById(R.id.tv_survey_title);

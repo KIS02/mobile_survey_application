@@ -17,6 +17,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.mobile_survey_application.util.EdgeToEdgeHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,6 +55,7 @@ public class CreateSurveyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_survey);
+        EdgeToEdgeHelper.enableWithRootInsets(this, R.id.root_layout);
 
         adminViewModel = new ViewModelProvider(this).get(AdminViewModel.class);
 

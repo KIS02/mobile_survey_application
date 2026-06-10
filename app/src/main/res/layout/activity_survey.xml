@@ -7,7 +7,7 @@
     android:background="#FFF7FF"
     android:paddingStart="22dp"
     android:paddingEnd="22dp"
-    android:paddingTop="18dp"
+    android:paddingTop="8dp"
     android:paddingBottom="18dp">
 
     <!-- 제목 -->
