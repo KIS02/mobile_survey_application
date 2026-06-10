@@ -13,6 +13,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.mobile_survey_application.util.EdgeToEdgeHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,7 @@ public class SurveyEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey_edit);
+        EdgeToEdgeHelper.enableWithRootInsets(this, R.id.root_layout);
 
         surveyId = getIntent().getLongExtra("surveyId", -1);
         surveyStatus = getIntent().getStringExtra("status");
