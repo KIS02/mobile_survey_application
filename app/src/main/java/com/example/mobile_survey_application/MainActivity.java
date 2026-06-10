@@ -16,7 +16,7 @@ import viewmodel.SurveyViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
-    private short autoDelayTime = 5000;
+    private short autoDelayTime = 0;
 
     private Handler autoHomeHandler = new Handler();
     private Runnable runable_delay = this::startApplication;
