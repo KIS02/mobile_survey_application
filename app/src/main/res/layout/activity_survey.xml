@@ -45,7 +45,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="1 - 전혀 그렇지 않다 / 5 - 매우 그렇다"
+        android:text="1 - 전혀 그렇지 않다 / 4 - 매우 그렇다"
         android:textSize="9sp"
         android:textColor="#666666"
         android:layout_marginTop="18dp" />
