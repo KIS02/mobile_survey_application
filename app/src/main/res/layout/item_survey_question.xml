@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_internal_question_box"
     android:layout_width="match_parent"
@@ -6,12 +7,12 @@
     android:minHeight="125dp"
     android:orientation="vertical"
     android:background="@drawable/survey_box"
+    android:layout_marginTop="14dp"
     android:layout_marginBottom="14dp"
     android:paddingStart="14dp"
     android:paddingTop="14dp"
     android:paddingEnd="14dp"
-    android:paddingBottom="14dp"
-    android:layout_marginTop="14dp">
+    android:paddingBottom="14dp">
 
     <TextView
         android:id="@+id/tv_question_title"
@@ -24,7 +25,8 @@
     <LinearLayout
         android:id="@+id/choice_row"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:minHeight="78dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
