@@ -234,7 +234,7 @@
                             android:background="#E5E5E5" />
                     </LinearLayout>
 
-                    <!-- Region -->
+                    <!-- Occupation -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -244,16 +244,17 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="지역"
+                            android:text="직업"
                             android:textColor="#999999"
                             android:textSize="12sp" />
 
                         <EditText
-                            android:id="@+id/etProfileRegion"
+                            android:id="@+id/etProfileOccupation"
                             android:layout_width="match_parent"
                             android:layout_height="44dp"
                             android:background="@android:color/transparent"
-                            android:hint="지역"
+                            android:hint="직업"
+                            android:inputType="text"
                             android:paddingStart="0dp"
                             android:textColor="#222222"
                             android:textSize="15sp" />

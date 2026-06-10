@@ -11,15 +11,18 @@ public class UserUpdateRequest {
     private String birthDate;
     private String location;
     private String region;
+    private String occupation;
 
     public UserUpdateRequest(String name, String telephone, String nickname,
-                             String birthDate, String location, String region) {
+                             String birthDate, String location, String region,
+                             String occupation) {
         this.name = name;
         this.telephone = telephone;
         this.nickname = nickname;
         this.birthDate = birthDate;
         this.location = location;
         this.region = region;
+        this.occupation = occupation;
     }
 
     public String getBirthDate() {

@@ -41,7 +41,8 @@ public class FragmentProfileEdit extends Fragment {
     private EditText etNickname;
     private EditText etBirthDate;
     private EditText etLocation;
-    private EditText etRegion;
+    private EditText etOccupation;
+    private String preservedRegion;
     private final List<CategoryResponse> categoryList = new ArrayList<>();
 
     public FragmentProfileEdit() {
@@ -61,7 +62,7 @@ public class FragmentProfileEdit extends Fragment {
         etNickname = view.findViewById(R.id.etProfileNickname);
         etBirthDate = view.findViewById(R.id.etProfileBirthDate);
         etLocation = view.findViewById(R.id.etProfileLocation);
-        etRegion = view.findViewById(R.id.etProfileRegion);
+        etOccupation = view.findViewById(R.id.etProfileOccupation);
         txtCategory = view.findViewById(R.id.txtCategory);
 
         setupInputValidation();
@@ -201,7 +202,8 @@ public class FragmentProfileEdit extends Fragment {
                 emptyToNull(nickname),
                 emptyToNull(birthDate),
                 emptyToNull(etLocation.getText().toString().trim()),
-                emptyToNull(etRegion.getText().toString().trim())
+                emptyToNull(preservedRegion),
+                emptyToNull(etOccupation.getText().toString().trim())
         );
         authViewModel.updateMyProfile(request);
     }
@@ -228,7 +230,8 @@ public class FragmentProfileEdit extends Fragment {
         setText(etNickname, user.getNickname());
         setText(etBirthDate, user.getBirthDate());
         setText(etLocation, user.getLocation());
-        setText(etRegion, user.getRegion());
+        preservedRegion = user.getRegion();
+        setText(etOccupation, user.getOccupation());
         ProfileImageHelper.loadProfileImage(this, imgProfile, user);
     }
 
