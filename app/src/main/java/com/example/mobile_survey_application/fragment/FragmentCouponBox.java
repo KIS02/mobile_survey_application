@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.mobile_survey_application.R;
+import com.example.mobile_survey_application.util.DateTimeFormatUtil;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
@@ -84,7 +85,7 @@ public class FragmentCouponBox extends Fragment {
 
         txtTitle.setText(coupon.getRewardName());
         txtStatus.setText(Boolean.TRUE.equals(coupon.getIsUsed()) ? "사용 완료" : "사용 가능");
-        txtDate.setText(formatDate(coupon.getExpiredAt()) + "까지");
+        txtDate.setText(DateTimeFormatUtil.formatDisplayDate(coupon.getExpiredAt()) + "까지");
         txtCode.setText(coupon.getBarcode());
 
         btnBarcode.setOnClickListener(v -> {
@@ -116,14 +117,4 @@ public class FragmentCouponBox extends Fragment {
         }
     }
 
-    private String formatDate(String isoDate) {
-        if (isoDate == null) return "";
-        try {
-            // "2026-12-31T..." → "2026. 12. 31"
-            String[] parts = isoDate.substring(0, 10).split("-");
-            return parts[0] + ". " + parts[1] + ". " + parts[2];
-        } catch (Exception e) {
-            return isoDate;
-        }
-    }
 }

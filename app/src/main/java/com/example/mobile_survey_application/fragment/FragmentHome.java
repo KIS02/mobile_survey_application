@@ -25,6 +25,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.mobile_survey_application.R;
 import com.example.mobile_survey_application.SurveyActivity;
+import com.example.mobile_survey_application.util.HeaderSettingsHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -254,6 +255,8 @@ public class FragmentHome extends Fragment {
         randomSurveyButton = view.findViewById(R.id.randomSurveyButton);
         questionLayout = view.findViewById(R.id.questionLayout);
         selectSurveyList = view.findViewById(R.id.selectSurveyList);
+
+        HeaderSettingsHelper.bindNavigateToSetting(view, this);
         randomSurveySlideView = view.findViewById(R.id.randomSurveySlideView);
         randomSurveyProgressText = view.findViewById(R.id.randomSurveyProgressText);
         nextQuestionButton = view.findViewById(R.id.nextQuestionButton);

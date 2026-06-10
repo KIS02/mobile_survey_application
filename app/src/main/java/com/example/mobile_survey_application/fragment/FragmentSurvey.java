@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.mobile_survey_application.R;
 import com.example.mobile_survey_application.SurveyActivity;
+import com.example.mobile_survey_application.util.HeaderSettingsHelper;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class FragmentSurvey extends Fragment {
         View view = inflater.inflate(R.layout.fragment_survey, container, false);
 
         surveyListLayout = view.findViewById(R.id.surveyListLayout);
+        HeaderSettingsHelper.bindNavigateToSetting(view, this);
 
         tokenManager = new TokenManager(requireContext());
         surveyViewModel = new ViewModelProvider(this).get(SurveyViewModel.class);

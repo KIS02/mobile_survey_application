@@ -107,6 +107,10 @@ public class HomeActivity extends AppCompatActivity {
                 .commit();
     }
 
+    public void navigateToSetting() {
+        bottomNavigationView.setSelectedItemId(R.id.setting);
+    }
+
     //region ### 설문 자동저장 관련함수 ###
     private void checkSurveyDraft() {
         SharedPreferences prefs = getSharedPreferences(PREF_SURVEY_DRAFT, MODE_PRIVATE);

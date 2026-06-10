@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.mobile_survey_application.R;
+import com.example.mobile_survey_application.util.DateTimeFormatUtil;
 
 import java.util.List;
 
@@ -142,7 +143,7 @@ public class FragmentPointHistory extends Fragment {
             TextView txtAmount = historyView.findViewById(R.id.txtPointAmount);
 
             txtTitle.setText(valueOrEmpty(history.getDescription()));
-            txtDate.setText(valueOrEmpty(history.getCreatedAt()));
+            txtDate.setText(DateTimeFormatUtil.formatDisplayDateTime(history.getCreatedAt()));
             txtAmount.setText(formatAmount(history.getAmount()));
 
             pointHistoryContainer.addView(historyView);

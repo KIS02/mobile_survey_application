@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mobile_survey_application.R;
+import com.example.mobile_survey_application.util.HeaderSettingsHelper;
 import com.example.mobile_survey_application.util.ProfileImageHelper;
 
 import model.UserResponse;
@@ -43,6 +44,7 @@ public class FragmentProfile extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        HeaderSettingsHelper.bindNavigateToSetting(view, this);
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         txtProfileName = view.findViewById(R.id.txtProfileName);
         txtProfileEmail = view.findViewById(R.id.txtProfileEmail);

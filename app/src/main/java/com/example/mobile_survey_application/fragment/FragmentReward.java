@@ -14,6 +14,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mobile_survey_application.R;
+import com.example.mobile_survey_application.util.DateTimeFormatUtil;
+import com.example.mobile_survey_application.util.HeaderSettingsHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +64,7 @@ public class FragmentReward extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        HeaderSettingsHelper.bindNavigateToSetting(view, this);
         tvCurrentCredit = view.findViewById(R.id.tvCurrentCredit);
         txtEmptyRewardHistory = view.findViewById(R.id.txtEmptyRewardHistory);
         rewardHistoryContainer = view.findViewById(R.id.rewardHistoryContainer);
@@ -159,7 +162,8 @@ public class FragmentReward extends Fragment {
             TextView txtAmount = historyView.findViewById(R.id.txtPointAmount);
 
             txtTitle.setText(valueOrDefault(history.getDescription(), "설문 참여"));
-            txtDate.setText(formatDate(history.getCreatedAt()));
+            String formattedDate = DateTimeFormatUtil.formatDisplayDateTime(history.getCreatedAt());
+            txtDate.setText(formattedDate.isEmpty() ? "날짜 정보 없음" : formattedDate);
             txtAmount.setText(formatEarningAmount(history.getAmount()));
 
             rewardHistoryContainer.addView(historyView);
@@ -186,20 +190,6 @@ public class FragmentReward extends Fragment {
             txtEmptyRewardHistory.setText(message);
             txtEmptyRewardHistory.setVisibility(View.VISIBLE);
         }
-    }
-
-    private String formatDate(String createdAt) {
-        if (createdAt == null || createdAt.isEmpty()) {
-            return "날짜 정보 없음";
-        }
-
-        String date = createdAt;
-        int timeSeparatorIndex = date.indexOf('T');
-        if (timeSeparatorIndex > 0) {
-            date = date.substring(0, timeSeparatorIndex);
-        }
-
-        return date.replace("-", ". ");
     }
 
     private String formatEarningAmount(Integer amount) {

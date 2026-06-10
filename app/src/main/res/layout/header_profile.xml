@@ -7,12 +7,12 @@
 
     android:background="#FFFFFF">
 
-    <!-- 로고 -->
-    <ImageView
-        android:id="@+id/headerLogo"
+    <!-- 제목 왼쪽 레이아웃 유지용 빈 공간 -->
+    <View
+        android:id="@+id/headerLogoSpacer"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:src="@drawable/ic_launcher_foreground"
+        android:importantForAccessibility="no"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -27,16 +27,21 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="#111111"
-        app:layout_constraintStart_toEndOf="@id/headerLogo"
-        app:layout_constraintTop_toTopOf="@id/headerLogo"
-        app:layout_constraintBottom_toBottomOf="@id/headerLogo" />
+        app:layout_constraintStart_toEndOf="@id/headerLogoSpacer"
+        app:layout_constraintTop_toTopOf="@id/headerLogoSpacer"
+        app:layout_constraintBottom_toBottomOf="@id/headerLogoSpacer" />
 
-    <!-- 알림 아이콘 -->
+    <!-- 설정 아이콘 -->
     <ImageView
-        android:id="@+id/headerNotification"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:src="@android:drawable/ic_dialog_info"
+        android:id="@+id/headerSettings"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_setting"
+        android:contentDescription="@string/settings"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="#111111"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
@@ -47,7 +52,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
         android:background="#DDDDDD"
-        app:layout_constraintTop_toBottomOf="@id/headerLogo"
+        app:layout_constraintTop_toBottomOf="@id/headerLogoSpacer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
